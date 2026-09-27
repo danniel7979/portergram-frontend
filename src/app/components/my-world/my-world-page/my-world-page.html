@@ -1,0 +1,131 @@
+<section class="my-world-page">
+
+    <header class="my-world-page__header">
+
+        <button type="button" class="my-world-page__back" (click)="goBack()">
+            ← Volver
+        </button>
+
+        <div class="my-world-page__title">
+
+            <div>
+
+                @switch (selectedWorld) {
+
+                @case ('garden') {
+
+                <div class="world-page-header">
+
+                    <h1>
+                        🌵 Jardín
+                    </h1>
+
+                    <button type="button" class="owl-sound-btn" [class.owl-sound-btn--muted]="owlMuted"
+                        (click)="toggleOwlMute()" [title]="owlMuted
+                                ? 'Activar sonido del búho'
+                                : 'Silenciar búho'">
+
+                        {{ owlMuted ? '🔇' : '🦉' }}
+
+                    </button>
+
+                </div>
+
+                }
+
+                @case ('stadium') {
+
+                <div class="world-page-header">
+
+                    <h1>
+                        🏟️ Estadio
+                    </h1>
+
+                </div>
+
+                }
+
+                @case ('space-base') {
+
+                <div class="world-page-header">
+
+                    <h1>
+                        🚀 Base espacial
+                    </h1>
+
+                </div>
+
+                }
+
+                }
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <main class="my-world-page__content">
+
+        <div *ngIf="loading" class="my-world-page__status">
+            Cargando Mi Mundo...
+        </div>
+
+        <div *ngIf="error" class="my-world-page__status my-world-page__status--error">
+            {{ error }}
+        </div>
+
+        <div *ngIf="!loading && !error && !selectedWorld" class="my-world-page__status">
+
+            <p>
+                {{ viewingOtherUser
+                ? 'Esta persona no tiene un mundo visible.'
+                : 'Todavía no has elegido un mundo.' }}
+            </p>
+
+            <a *ngIf="!viewingOtherUser" routerLink="/home" [queryParams]="{ chooseWorld: '1' }"
+                class="my-world-page__button">
+                Elegir mundo
+            </a>
+
+            <a *ngIf="viewingOtherUser" routerLink="/home" class="my-world-page__button">
+                Volver a la Home
+            </a>
+        </div>
+
+        <ng-container *ngIf="
+    !loading &&
+    !error &&
+    selectedWorld &&
+    myWorld as world
+  ">
+
+            <div class="my-world-page__scene">
+                @switch (selectedWorld) {
+
+                @case ('garden') {
+
+                <app-garden-world [elements]="world.visualElements || []" mode="full">
+                </app-garden-world>
+
+                }
+
+                @case ('stadium') {
+
+                <app-stadium-world [elements]="world.visualElements || []" mode="full">
+                </app-stadium-world>
+
+                }
+
+                @case ('space-base') {
+                <app-space-base-world [elements]="myWorld.visualElements || []" mode="full">
+                </app-space-base-world>
+                }
+
+                }
+            </div>
+        </ng-container>
+
+    </main>
+
+</section>

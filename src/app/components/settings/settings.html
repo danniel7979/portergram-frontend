@@ -1,0 +1,251 @@
+<div class="settings-page" [style.backgroundImage]="globalBackground ? 'url(' + globalBackground + ')' : null">
+
+  <button type="button" class="settings-home-link" (click)="goHome()">← Inicio</button>
+
+  <h1>Configuración de perfil</h1>
+
+  <div class="settings-form">
+
+    <label>Cambiar Nombre</label>
+    <input type="text" [(ngModel)]="profile.name" name="name" maxlength="50" autocomplete="off">
+
+    <label>Cambiar Apellidos</label>
+    <input type="text" [(ngModel)]="profile.surname" name="surname" maxlength="80" autocomplete="off">
+
+    <label>Cambiar Nick</label>
+    <input type="text" [(ngModel)]="profile.nick" name="nick" maxlength="30" autocomplete="off">
+
+    <label>Biografía</label>
+    <textarea [(ngModel)]="profile.bio"></textarea>
+
+    <label>Ubicación</label>
+    <input [(ngModel)]="profile.location">
+
+    <label>Profesión</label>
+    <input [(ngModel)]="profile.profession">
+
+    <label>Web</label>
+    <input [(ngModel)]="profile.website">
+
+  </div>
+  <div class="container">
+
+    <div class="color-like tamaño">
+      <label>Color del corazón</label>
+
+      <input type="color" [(ngModel)]="profile.likeColor" />
+    </div>
+
+    <div class="color-scroll tamaño">
+      <label>Color del scroll</label>
+
+      <input type="color" [(ngModel)]="profile.scrollColor" />
+    </div>
+
+    <!--<div class="theme-panel">
+    <button (click)="changeTheme('neon')">Neón</button>
+    <button (click)="changeTheme('glass')">Glass</button>
+    <button (click)="changeTheme('dark')">Dark</button>
+
+    <label>
+      Fondo global
+      <input type="file" accept="image/*" (change)="changeGlobalBackground($event)" hidden>
+    </label>
+
+    <button (click)="removeGlobalBackground()">Quitar fondo</button>
+  </div>
+  <div class="upload-box">
+    <input type="file" (change)="fileChangeEvent($event)" accept="image/*">
+    <button type="button" (click)="uploadImage()">Subir imagen</button>
+  </div>
+  <div class="layout" [ngClass]="theme"
+    [style.background-image]="globalBackground ? 'url(' + globalBackground + ')' : ''">-->
+    <div class="setting-block tamaño">
+      <label>Subir avatar</label>
+      <input type="file" accept="image/*" (change)="fileChangeEvent($event)">
+      <button type="button" (click)="uploadImage()">Subir avatar</button>
+      <button type="button" class="delete-avatar-btn" *ngIf="identity?.image" (click)="deleteAvatar()">
+
+        Eliminar avatar
+
+      </button>
+    </div>
+
+    <div class="setting-block tamaño">
+      <label>Color fondo eliminar comentarios del perfil</label>
+      <input type="color" [(ngModel)]="profile.deleteCommentBackgroundColor" name="deleteCommentBackgroundColor" />
+
+      <label>Color texto eliminar comentarios del perfil</label>
+      <input type="color" [(ngModel)]="profile.deleteCommentTextColor" name="deleteCommentTextColor" />
+    </div>
+
+    <div class="setting-block tamaño">
+      <label>Color fondo eliminar respuestas (perfil)</label>
+
+      <input type="color" [(ngModel)]="profile.deleteReplyBackgroundColor" name="deleteReplyBackgroundColor" />
+
+      <label>Color X eliminar respuestas (perfil)</label>
+
+      <input type="color" [(ngModel)]="profile.deleteReplyTextColor" name="deleteReplyTextColor" />
+    </div>
+
+    <div class="setting-block tamaño">
+      <label>Tema</label>
+      <button type="button" (click)="changeTheme('neon')">Neón</button>
+      <button type="button" (click)="changeTheme('glass')">Glass</button>
+      <button type="button" (click)="changeTheme('dark')">Dark</button>
+    </div>
+
+    <div class="setting-block tamaño">
+      <label>Fondo global</label>
+      <input type="file" accept="image/*" (change)="changeGlobalBackground($event)">
+      <button type="button" (click)="removeGlobalBackground()">Quitar fondo</button>
+    </div>
+    <label class="privacy-option tamaño">
+      <input type="checkbox" [(ngModel)]="profile.isPrivate">
+      Perfil privado
+    </label>
+
+
+  </div>
+
+  <section class="sound-settings">
+
+    <div class="sound-settings-header">
+      <div>
+        <h2>🔊 Sonidos de notificaciones</h2>
+
+        <p>
+          Elige una categoría y un sonido diferente para cada tipo de notificación.
+        </p>
+      </div>
+    </div>
+
+    <div class="sound-settings-grid">
+
+      <article class="sound-config-card" *ngFor="let soundType of soundTypes">
+
+        <div class="sound-config-title">
+
+          <span class="sound-config-icon">
+            {{ soundType.icon }}
+          </span>
+
+          <h3>
+            {{ soundType.name }}
+          </h3>
+
+        </div>
+
+        <div class="sound-select-group">
+
+          <label>
+            Categoría
+          </label>
+
+          <select [(ngModel)]="selectedSoundCategories[soundType.id]" (change)="changeSoundCategory(soundType.id)">
+
+            <option *ngFor="let category of soundCategories" [value]="category.id">
+
+              {{ category.name }}
+
+            </option>
+
+          </select>
+
+        </div>
+
+        <div class="sound-select-group">
+
+          <label>
+            Sonido
+          </label>
+
+          <select [(ngModel)]="selectedSounds[soundType.id]" (change)="changeSelectedSound()">
+
+            <option value="">
+              Sin sonido
+            </option>
+
+            <option *ngFor="let sound of getSoundsForType(soundType.id)" [value]="sound.path">
+
+              {{ sound.name }}
+
+            </option>
+
+          </select>
+
+        </div>
+
+        <button type="button" class="sound-preview-btn" [disabled]="!selectedSounds[soundType.id]"
+          (click)="previewSelectedSound(soundType.id)">
+
+          ▶ Probar sonido
+
+        </button>
+        <button type="button" class="sound-remove-btn" [disabled]="!selectedSounds[soundType.id]"
+          (click)="removeSound(soundType.id)">
+
+          ✖ Quitar sonido
+
+        </button>
+
+      </article>
+
+    </div>
+
+  </section>
+
+  <!--<button type="button" (click)="save()">Guardar cambios</button>-->
+
+  <div class="settings-actions">
+
+    <button class="save-btn" (click)="save()">
+      Guardar cambios
+    </button>
+
+    <button class="home-btn" (click)="goHome()">
+      Inicio
+    </button>
+
+  </div>
+  <section class="settings-danger-zone" aria-labelledby="delete-account-title">
+    <h2 id="delete-account-title">Eliminar cuenta</h2>
+    <p>Esta acción es permanente y no se puede deshacer.</p>
+
+    <p *ngIf="isDemo" class="settings-danger-zone__notice">
+      Estás en el modo de demostración; aquí no hay ninguna cuenta real que eliminar.
+    </p>
+
+    <button *ngIf="!isDemo && !confirmingAccountDeletion" type="button" class="delete-account-trigger"
+      [disabled]="!token" (click)="openDeleteAccountConfirmation()">
+      Eliminar mi cuenta
+    </button>
+
+    <div *ngIf="!isDemo && confirmingAccountDeletion" class="settings-danger-zone__confirmation">
+
+      <label for="delete-account-confirmation">
+        Para confirmar, escribe <strong>ELIMINAR</strong>:
+      </label>
+
+      <input id="delete-account-confirmation" type="text" [(ngModel)]="accountDeletionConfirmation" autocomplete="off"
+        spellcheck="false" [disabled]="deletingAccount">
+
+      <p *ngIf="deleteAccountError" role="alert" class="settings-danger-zone__error">
+        {{ deleteAccountError }}
+      </p>
+
+      <div class="settings-danger-zone__actions">
+        <button type="button" class="delete-account-confirm"
+          [disabled]="deletingAccount || accountDeletionConfirmation.trim() !== 'ELIMINAR'" (click)="deleteAccount()">
+          {{ deletingAccount ? 'Eliminando…' : 'Eliminar cuenta definitivamente' }}
+        </button>
+
+        <button type="button" class="delete-account-cancel" [disabled]="deletingAccount"
+          (click)="cancelDeleteAccount()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </section>
+</div>

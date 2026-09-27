@@ -1,0 +1,1360 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.garden-scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  overflow: hidden;
+  border-radius: 14px;
+  isolation: isolate;
+
+  background:
+    linear-gradient(to bottom,
+      #74c9ff 0%,
+      #bceaff 45%,
+      #80b84d 66%,
+      #3f712d 100%);
+}
+
+.garden-scene--aside {
+  min-height: 190px;
+}
+
+.garden-scene--full {
+  width: 100%;
+  height: 100%;
+  min-height: 650px;
+}
+
+.garden-sky {
+  position: absolute;
+  inset: 0 0 40% 0;
+  z-index: 0;
+  background:
+    linear-gradient(to bottom,
+      rgba(18, 104, 186, 0.35),
+      rgba(255, 255, 255, 0.05));
+}
+
+.garden-sun {
+  position: absolute;
+  top: 8%;
+  margin-right: auto;
+  z-index: 1;
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  animation: sunPulse 4s ease-in-out infinite;
+}
+
+.garden-cloud {
+  position: absolute;
+  z-index: 1;
+  opacity: 0.8;
+  font-size: clamp(1.4rem, 5vw, 2.4rem);
+  pointer-events: none;
+}
+
+.garden-cloud--one {
+  top: 10%;
+  left: -15%;
+  animation: cloudMove 18s linear infinite;
+}
+
+.garden-cloud--two {
+  top: 25%;
+  left: -25%;
+  animation: cloudMove 26s linear infinite 5s;
+}
+
+.garden-element {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center center;
+}
+
+.garden-element__symbol {
+  display: block;
+  font-size: clamp(1.4rem, 7vw, 4.2rem);
+  line-height: 1;
+  filter:
+    drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Terreno */
+
+.garden-ground {
+position: absolute;
+
+left: 0;
+top: 50%;
+
+width: 100%;
+height: 30%;
+
+z-index: 1;
+overflow: visible;
+}
+
+/* Cactus
+
+.garden-cactus.stage-small
+.garden-element__symbol {
+  font-size: clamp(1.5rem, 6vw, 3rem);
+}
+
+.garden-cactus.stage-medium
+.garden-element__symbol {
+  font-size: clamp(2rem, 8vw, 4rem);
+}
+
+.garden-cactus.stage-complete
+.garden-element__symbol {
+  font-size: clamp(2.6rem, 10vw, 5rem);
+}
+
+/* Elementos ambientales */
+
+.garden-flowers .garden-element__symbol {
+  letter-spacing: -8px;
+}
+
+.garden-butterflies {
+  animation: butterflyFly 5s ease-in-out infinite;
+}
+
+.garden-birds {
+  animation: birdFly 8s ease-in-out infinite;
+}
+
+.garden-tree {
+  transform-origin: center bottom;
+}
+
+.garden-lake {
+  border-radius: 50%;
+
+  animation: waterMove 3s ease-in-out infinite;
+}
+
+.garden-lake .garden-element__symbol {
+  opacity: 0;
+}
+
+/* Lago pequeño */
+.garden-lake.stage-small {
+  width: 16% !important;
+  height: 22% !important;
+  left: 77% !important;
+  top: 80% !important;
+}
+
+.garden-lake.stage-small .garden-element__image {
+  transform: scale(9.75);
+}
+
+/* Lago mediano */
+.garden-lake.stage-medium {
+  width: 36% !important;
+  height: 32% !important;
+  left: 76% !important;
+  top: 82% !important;
+}
+
+.garden-lake.stage-medium .garden-element__image {
+  transform: scale(1);
+}
+
+/* Lago grande */
+.garden-lake.stage-complete {
+  width: 45% !important;
+  height: 42% !important;
+  left: 76% !important;
+  top: 83% !important;
+}
+
+.garden-lake.stage-complete .garden-element__image {
+  transform: scale(1.35);
+}
+
+.garden-ducks {
+  overflow: visible;
+  z-index: 5;
+}
+
+.garden-ducks .garden-element__image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+
+  user-select: none;
+  pointer-events: none;
+}
+
+.animation-duck-swim .garden-element__image {
+  animation: duckSwim 5s ease-in-out infinite;
+}
+
+@keyframes duckSwim {
+
+  0%,
+  100% {
+    transform: translateX(-7px) translateY(1px);
+  }
+
+  50% {
+    transform: translateX(9px) translateY(-1px);
+  }
+}
+
+/* Posiciones exclusivas de la preview */
+
+.garden-scene--aside .garden-butterfly-1 {
+  left: 78% !important;
+  top: 68% !important;
+  width: 11% !important;
+  height: 18% !important;
+}
+
+.garden-scene--aside .garden-butterfly-2 {
+  left: 18% !important;
+  top: 50% !important;
+  width: 11% !important;
+  height: 18% !important;
+}
+
+.garden-scene--aside .garden-butterfly-3 {
+  left: 80% !important;
+  top: 22% !important;
+  width: 11% !important;
+  height: 18% !important;
+}
+
+.garden-scene--aside .garden-butterfly-4 {
+  left: 44% !important;
+  top: 12% !important;
+  width: 31% !important;
+  height: 18% !important;
+}
+
+.garden-lake {
+  overflow: visible;
+  transform-origin: center center;
+}
+
+.garden-lake .garden-element__image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.animation-water-idle .garden-element__image {
+  animation: lakeIdle 4s ease-in-out infinite;
+}
+
+@keyframes lakeIdle {
+
+  0%,
+  100% {
+    transform: scaleX(1) scaleY(1);
+  }
+
+  50% {
+    transform: scaleX(1.025) scaleY(0.985);
+  }
+}
+
+.garden-element__hitbox--garden-lake {
+  width: 82%;
+  height: 70%;
+  border-radius: 50%;
+}
+
+.garden-lake .garden-element__image {
+  filter: none !important;
+  box-shadow: none !important;
+  drop-shadow: none !important;
+}
+
+.garden-lake .garden-element__image {
+  filter: none !important;
+}
+
+/* Animaciones indicadas por backend */
+
+.animation-cactus-idle .garden-element__symbol {
+  animation: cactusIdle 3s ease-in-out infinite;
+}
+
+.animation-cactus-grow .garden-element__symbol {
+  animation: growElement 0.9s ease-out;
+}
+
+.animation-flower-bloom .garden-element__symbol {
+  animation: flowerBloom 1.2s ease-out;
+}
+
+.animation-tree-sway .garden-element__symbol,
+.animation-tree-grow .garden-element__symbol {
+  animation: treeSway 4s ease-in-out infinite;
+}
+
+.animation-butterfly-fly .garden-element__symbol,
+.animation-butterfly-fly .garden-element__image {
+  animation: butterflyFly 4s ease-in-out infinite;
+}
+
+.garden-butterfly-1 .garden-element__image {
+  animation-duration: 2.5s;
+}
+
+.garden-butterfly-2 .garden-element__image {
+  animation-duration: 5.2s;
+  animation-delay: -7.2s;
+}
+
+.garden-butterfly-3 .garden-element__image {
+  animation-duration: 4.8s;
+  animation-delay: -2s;
+}
+
+.garden-butterfly-4 .garden-element__image {
+  animation-duration: 5.7s;
+  animation-delay: -0.8s;
+}
+
+/* Por defecto ningún elemento intercepta clics */
+.garden-element {
+  pointer-events: none;
+  cursor: default;
+}
+
+.garden-element {
+  pointer-events: none;
+}
+
+.garden-element__image,
+.garden-element__symbol {
+  pointer-events: none;
+  user-select: none;
+}
+
+.garden-element__hitbox {
+  position: absolute;
+  z-index: 100;
+
+  border: 0;
+  padding: 0;
+  margin: 0;
+
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.garden-element__hitbox--garden-cactus {
+  width: 16%;
+  height: 78%;
+}
+
+.garden-element__hitbox--garden-flower-1,
+.garden-element__hitbox--garden-flower-2,
+.garden-element__hitbox--garden-flower-3 {
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+}
+
+.garden-element__hitbox--garden-butterfly-1,
+.garden-element__hitbox--garden-butterfly-2,
+.garden-element__hitbox--garden-butterfly-3,
+.garden-element__hitbox--garden-butterfly-4 {
+  width: 75%;
+  height: 75%;
+  border-radius: 50%;
+}
+
+/* Keyframes */
+
+@keyframes cloudMove {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(520%);
+  }
+}
+
+@keyframes sunPulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes cactusIdle {
+
+  0%,
+  100% {
+    transform: rotate(-1deg);
+  }
+
+  50% {
+    transform: rotate(1deg);
+  }
+}
+
+@keyframes growElement {
+  0% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+
+  70% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes flowerBloom {
+  0% {
+    transform: scale(0) rotate(-20deg);
+    opacity: 0;
+  }
+
+  70% {
+    transform: scale(1.2) rotate(5deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+@keyframes treeSway {
+
+  0%,
+  100% {
+    transform: rotate(-1.5deg);
+  }
+
+  50% {
+    transform: rotate(1.5deg);
+  }
+}
+
+@keyframes butterflyFly {
+
+  0%,
+  100% {
+    transform: translate(-8px, 4px) rotate(-8deg);
+  }
+
+  50% {
+    transform: translate(12px, -12px) rotate(8deg);
+  }
+}
+
+@keyframes birdFly {
+
+  0%,
+  100% {
+    transform: translateX(-10px);
+  }
+
+  50% {
+    transform: translateX(16px) translateY(-6px);
+  }
+}
+
+@keyframes waterMove {
+
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scaleX(1);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) scaleX(1.04);
+  }
+}
+
+.garden-element__image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+}
+
+.garden-ducks-container {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: visible;
+  pointer-events: none;
+}
+
+.garden-duck {
+  position: absolute;
+
+  width: 90px;
+  height: auto;
+
+  object-fit: contain;
+  user-select: none;
+
+  pointer-events: auto;
+  cursor: pointer;
+
+  z-index: 20;
+
+  animation:
+    duckRoute var(--duck-duration, 14s) linear var(--duck-delay, 0s) infinite;
+}
+
+.duck-female {
+  width: 82px;
+}
+
+.duckling {
+  width: 48px;
+}
+
+@keyframes duckRoute {
+  0% {
+    left: 15%;
+    top: 40%;
+
+    transform:
+      translate(-50%, -50%) scale(var(--duck-scale, 1)) scaleX(1);
+  }
+
+  25% {
+    left: 55%;
+    top: 24%;
+
+    transform:
+      translate(-50%, -50%) scale(var(--duck-scale, 1)) scaleX(1);
+  }
+
+  50% {
+    left: 82%;
+    top: 50%;
+
+    transform:
+      translate(-50%, -50%) scale(var(--duck-scale, 1)) scaleX(-1);
+  }
+
+  75% {
+    left: 50%;
+    top: 72%;
+
+    transform:
+      translate(-50%, -50%) scale(var(--duck-scale, 1)) scaleX(-1);
+  }
+
+  100% {
+    left: 15%;
+    top: 40%;
+
+    transform:
+      translate(-50%, -50%) scale(var(--duck-scale, 1)) scaleX(1);
+  }
+}
+
+.garden-frog {
+  z-index: 20 !important;
+  pointer-events: auto;
+}
+
+.garden-frog .garden-element__image {
+  pointer-events: auto !important;
+  cursor: pointer;
+
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+
+  background: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+.frog-jump-shore {
+  animation:
+    frogJumpShoreToWater 0.9s ease-in-out;
+}
+
+@keyframes frogJumpShoreToWater {
+
+  0% {
+    transform:
+      translate(0, 0) scale(1);
+
+    opacity: 1;
+  }
+
+  30% {
+    transform:
+      translate(35px, -55px) scale(1.08);
+  }
+
+  60% {
+    transform:
+      translate(80px, -65px) scale(1.02);
+  }
+
+  85% {
+    transform:
+      translate(115px, -20px) scale(0.9);
+
+    opacity: 1;
+  }
+
+  100% {
+    transform:
+      translate(125px, 10px) scale(0.75);
+
+    opacity: 0;
+  }
+}
+
+.frog-jump-lilypad {
+  animation:
+    frogJumpLilypadToWater 0.75s ease-in-out;
+}
+
+@keyframes frogJumpLilypadToWater {
+
+  0% {
+    transform:
+      translate(0, 0) scale(1);
+
+    opacity: 1;
+  }
+
+  35% {
+    transform:
+      translate(25px, -40px) scale(1.08);
+  }
+
+  70% {
+    transform:
+      translate(55px, -15px) scale(0.95);
+
+    opacity: 1;
+  }
+
+  100% {
+    transform:
+      translate(70px, 12px) scale(0.75);
+
+    opacity: 0;
+  }
+}
+
+.garden-frog-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.garden-lilypad {
+  position: absolute;
+  left: 50%;
+  top: 67%;
+
+  width: 125%;
+  height: auto;
+
+  transform: translate(-50%, -50%);
+
+  z-index: 1;
+  pointer-events: none;
+}
+
+.garden-frog-image {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+
+  width: 100%;
+  height: auto;
+
+  transform: translate(-50%, -50%);
+
+  z-index: 2;
+  cursor: pointer;
+}
+
+.frog-jump-shore {
+  animation: frogJumpFromShore 0.9s ease-in-out forwards;
+}
+
+.frog-jump-lilypad {
+  animation: frogJumpFromLilypad 0.75s ease-in-out forwards;
+}
+
+@keyframes frogJumpFromShore {
+
+  0% {
+    transform:
+      translate(-50%, -50%) scale(1) rotate(0deg);
+
+    opacity: 1;
+  }
+
+  25% {
+    transform:
+      translate(calc(-50% + 30px),
+        calc(-50% - 45px)) scale(1.08) rotate(6deg);
+  }
+
+  55% {
+    transform:
+      translate(calc(-50% + 70px),
+        calc(-50% - 65px)) scale(1.03) rotate(10deg);
+  }
+
+  80% {
+    transform:
+      translate(calc(-50% + 105px),
+        calc(-50% - 20px)) scale(0.9) rotate(4deg);
+
+    opacity: 1;
+  }
+
+  100% {
+    transform:
+      translate(calc(-50% + 120px),
+        calc(-50% + 12px)) scale(0.75) rotate(0deg);
+
+    opacity: 0;
+  }
+}
+
+.frog-jump-lilypad {
+  animation: frogJumpLilypad 0.9s ease-in-out forwards;
+}
+
+@keyframes frogJumpLilypad {
+
+  0% {
+    transform:
+      translate(-50%, -50%) scale(1) rotate(0deg);
+
+    opacity: 1;
+  }
+
+  25% {
+    transform:
+      translate(calc(-50% + 30px),
+        calc(-50% - 45px)) scale(1.08) rotate(6deg);
+  }
+
+  55% {
+    transform:
+      translate(calc(-50% + 70px),
+        calc(-50% - 65px)) scale(1.03) rotate(10deg);
+  }
+
+  80% {
+    transform:
+      translate(calc(-50% + 105px),
+        calc(-50% - 20px)) scale(0.9) rotate(4deg);
+
+    opacity: 1;
+  }
+
+  100% {
+    transform:
+      translate(calc(-50% + 120px),
+        calc(-50% + 12px)) scale(0.75) rotate(0deg);
+
+    opacity: 0;
+  }
+}
+
+.gnome-path-container {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: visible;
+  pointer-events: none;
+}
+
+.gnome-path-mask {
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  height: 100%;
+
+  overflow: hidden;
+
+  transition: width 0.8s ease;
+}
+
+.gnome-path-image {
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  width: auto;
+  height: 100%;
+
+  max-width: none;
+
+  object-fit: contain;
+  object-position: left center;
+
+  pointer-events: none;
+  user-select: none;
+}
+
+.garden-sky {
+  transition:
+    background 3s ease,
+    filter 3s ease;
+position: absolute;
+
+top: 0;
+left: 0;
+
+width: 100%;
+height: 65%;
+
+z-index: 0;
+}
+
+/* AMANECER */
+.garden-scene--dawn .garden-sky {
+  background:
+    linear-gradient(to bottom,
+      #694f88 0%,
+      #ef8c72 45%,
+      #ffd7a0 100%);
+}
+
+/* DÍA */
+.garden-scene--day .garden-sky {
+  background:
+    linear-gradient(to bottom,
+      #65bfff,
+      #bcecff);
+}
+
+/* ATARDECER */
+.garden-scene--sunset .garden-sky {
+  background:
+    linear-gradient(to bottom,
+      #75436f 0%,
+      #e9765b 45%,
+      #f8b35e 100%);
+}
+
+/* NOCHE */
+.garden-scene--night .garden-sky {
+  background:
+    linear-gradient(to bottom,
+      #030818 0%,
+      #081832 50%,
+      #102b46 130%);
+}
+
+.garden-sun {
+  transition:
+    opacity 2s ease,
+    filter 2s ease,
+    transform 2s ease;
+}
+
+.garden-scene--dawn .garden-sun {
+  opacity: 0.75;
+  filter:
+    sepia(1) saturate(1.6);
+}
+
+.garden-scene--day .garden-sun {
+  opacity: 1;
+}
+
+.garden-scene--sunset .garden-sun {
+  opacity: 0.65;
+  filter:
+    sepia(1) hue-rotate(-20deg) saturate(2);
+}
+
+.garden-scene--night .garden-sun {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.garden-scene--night .garden-cactus .garden-element__image {
+  filter:
+    brightness(0.55) saturate(0.8) drop-shadow(0 0 6px rgba(100, 160, 210, 0.25));
+}
+
+.garden-scene--night .garden-lake .garden-element__image {
+  filter:
+    brightness(0.7) saturate(0.85) drop-shadow(0 0 7px rgba(80, 170, 255, 0.3));
+}
+
+.garden-scene--night .garden-gnome-house .garden-element__image {
+  filter:
+    brightness(0.7);
+}
+
+.garden-scene--night .garden-flower-1 .garden-element__image,
+.garden-scene--night .garden-flower-2 .garden-element__image,
+.garden-scene--night .garden-flower-3 .garden-element__image {
+  filter:
+    brightness(0.55) saturate(0.75);
+}
+
+.firefly {
+  position: absolute;
+
+  width: 4px;
+  height: 4px;
+
+  border-radius: 50%;
+
+  background: #fff7a5;
+
+  box-shadow:
+    0 0 4px #fff7a5,
+    0 0 7px #ffd84a,
+    0 0 11px rgba(255, 216, 74, 0.65);
+
+  pointer-events: none;
+
+  opacity: 0.8;
+
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+.firefly-route-0 {
+  animation-name:
+    fireflyRoute0,
+    fireflyGlow;
+}
+
+.firefly-route-1 {
+  animation-name:
+    fireflyRoute1,
+    fireflyGlow;
+}
+
+.firefly-route-2 {
+  animation-name:
+    fireflyRoute2,
+    fireflyGlow;
+}
+
+.firefly-route-3 {
+  animation-name:
+    fireflyRoute3,
+    fireflyGlow;
+}
+
+@keyframes fireflyRoute0 {
+
+  0% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(18px, -8px);
+  }
+
+  50% {
+    transform: translate(28px, 6px);
+  }
+
+  75% {
+    transform: translate(12px, 16px);
+  }
+
+  100% {
+    transform: translate(-6px, 4px);
+  }
+}
+
+@keyframes fireflyRoute1 {
+
+  0% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(-7px, -18px);
+  }
+
+  50% {
+    transform: translate(5px, -30px);
+  }
+
+  75% {
+    transform: translate(12px, -14px);
+  }
+
+  100% {
+    transform: translate(3px, 5px);
+  }
+}
+
+@keyframes fireflyRoute2 {
+
+  0% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(12px, 10px);
+  }
+
+  50% {
+    transform: translate(25px, -5px);
+  }
+
+  75% {
+    transform: translate(8px, -20px);
+  }
+
+  100% {
+    transform: translate(-8px, -6px);
+  }
+}
+
+@keyframes fireflyRoute3 {
+
+  0% {
+    transform: translate(0, 0);
+  }
+
+  20% {
+    transform: translate(14px, -10px);
+  }
+
+  40% {
+    transform: translate(22px, 6px);
+  }
+
+  60% {
+    transform: translate(8px, 18px);
+  }
+
+  80% {
+    transform: translate(-10px, 10px);
+  }
+
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes fireflyGlow {
+
+  0% {
+    opacity: 0.25;
+    box-shadow:
+      0 0 2px #fff7a5,
+      0 0 5px #ffd84a;
+  }
+
+  50% {
+    opacity: 1;
+    box-shadow:
+      0 0 5px #fff7a5,
+      0 0 10px #ffd84a,
+      0 0 16px rgba(255, 216, 74, 0.75);
+  }
+
+  100% {
+    opacity: 0.45;
+    box-shadow:
+      0 0 3px #fff7a5,
+      0 0 7px #ffd84a;
+  }
+}
+
+/*@keyframes fireflyFloat {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(15px, -12px);
+  }
+
+  50% {
+    transform: translate(-7px, -20px);
+  }
+
+  75% {
+    transform: translate(-15px, 7px);
+  }
+
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes fireflyGlow {
+  from {
+    opacity: 0.25;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+*/
+.garden-scene--night .garden-gnome-lantern .garden-element__image {
+  filter:
+    brightness(1.35) drop-shadow(0 0 6px #ffd36a) drop-shadow(0 0 14px #ff9d2e) drop-shadow(0 0 24px rgba(255, 122, 0, 0.6));
+}
+
+.garden-scene--night .garden-gnome-lantern::after {
+  content: '';
+
+  position: absolute;
+
+  left: 50%;
+  top: 75%;
+
+  width: 160%;
+  height: 100%;
+
+  transform: translate(-50%, -50%);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(ellipse,
+      rgba(255, 191, 73, 0.32),
+      rgba(255, 150, 30, 0.12) 45%,
+      transparent 72%);
+
+  pointer-events: none;
+}
+
+@keyframes branchGrow {
+  0% {
+    opacity: 0;
+    transform: scale(0.15);
+  }
+
+  70% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes branchSway {
+
+  0%,
+  100% {
+    transform: rotate(-1deg);
+  }
+
+  50% {
+    transform: rotate(1deg);
+  }
+}
+
+.garden-branch-1,
+.garden-branch-2,
+.garden-branch-3,
+.garden-branch-4 {
+  position: absolute;
+  overflow: visible;
+  transform-origin: center bottom;
+}
+
+.garden-branch-1 .garden-element__image,
+.garden-branch-2 .garden-element__image,
+.garden-branch-3 .garden-element__image,
+.garden-branch-4 .garden-element__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.garden-moon {
+  position: absolute;
+
+  transform: translate(-50%, -50%);
+
+  font-size: 48px;
+
+  z-index: 2;
+
+  pointer-events: none;
+
+  filter:
+    drop-shadow(0 0 8px rgba(220, 235, 255, 0.7));
+
+  transition:
+    left 60s linear,
+    top 60s linear;
+}
+
+.garden-scene--aside .garden-moon {
+  font-size: 22px;
+}
+
+.garden-scene--night .garden-cactus .garden-element__image {
+  filter:
+    brightness(calc(0.45 + var(--moon-light) * 0.35)) saturate(0.8);
+}
+
+.garden-scene--night .garden-lake .garden-element__image {
+  filter:
+    brightness(calc(0.55 + var(--moon-light) * 0.35)) saturate(0.85) drop-shadow(0 0 7px rgba(100, 180, 255, 0.25));
+}
+
+.garden-scene--night .garden-gnome-house .garden-element__image {
+  filter:
+    brightness(calc(0.5 + var(--moon-light) * 0.3));
+}
+
+.garden-moon {
+  position: absolute;
+
+  transform: translate(-50%, -50%);
+
+  font-size: 48px;
+
+  z-index: 1;
+
+  pointer-events: none;
+
+  filter:
+    drop-shadow(0 0 8px rgba(220, 235, 255, 0.7));
+
+  transition:
+    left 60s linear,
+    top 60s linear;
+}
+
+.garden-cactus {
+  z-index: 4 !important;
+}
+
+.garden-scene--aside .garden-branch-3 {
+  margin-top: 15px !important;
+}
+
+.garden-scene--aside .garden-branch-1 {
+  margin-top: -10px !important;
+}
+
+.garden-scene--aside .garden-branch-2 {
+  margin-left: -10px !important;
+}
+
+/*
+ * En pantallas estrechas el mundo usa una composición vertical propia.
+ * Estas reglas corrigen los tamaños que antes quedaban fijados por las
+ * variantes de escritorio y amplían las zonas de toque sin alterar la imagen.
+ */
+@media (max-width: 600px) {
+  .garden-scene--full {
+    min-height: 560px;
+  }
+
+  .garden-scene--full .garden-lake.stage-small {
+    left: 84% !important;
+    top: 77% !important;
+    width: 20% !important;
+    height: 12% !important;
+  }
+
+  .garden-scene--full .garden-lake.stage-medium {
+    left: 82% !important;
+    top: 77% !important;
+    width: 28% !important;
+    height: 16% !important;
+  }
+
+  .garden-scene--full .garden-lake.stage-complete {
+    left: 80% !important;
+    top: 77% !important;
+    width: 38% !important;
+    height: 20% !important;
+  }
+
+  .garden-scene--full .garden-duck {
+    width: clamp(40px, 12vw, 54px);
+  }
+
+  .garden-scene--full .duck-female {
+    width: clamp(36px, 11vw, 50px);
+  }
+
+  .garden-scene--full .duckling {
+    width: clamp(24px, 7vw, 32px);
+  }
+
+  .garden-scene--full .garden-moon {
+    font-size: clamp(2rem, 10vw, 2.75rem);
+  }
+
+  .garden-scene--full .garden-element__hitbox {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .garden-scene--full .garden-element__hitbox--garden-lake {
+    min-width: 72px;
+    min-height: 52px;
+  }
+}
+
+.garden-cactus {
+  z-index: 4 !important;
+}

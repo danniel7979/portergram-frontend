@@ -1,0 +1,486 @@
+<div class="profile-wall" [ngClass]="theme"
+  [style.backgroundImage]="globalBackground ? 'url(' + globalBackground + ')' : null">
+  <div class="private-profile" *ngIf="privateProfile">
+    🔒 Este perfil es privado
+  </div>
+  <div class="wall-grid" *ngIf="!privateProfile">
+
+    <!-- CARD CENTRAL -->
+    <section class="profile-core" *ngIf="user">
+
+      <div class="avatar-container">
+
+        <!-- Avatar con imagen -->
+        <img *ngIf="user?.image" [src]="url + 'get-image-user/' + user.image" class="profile-avatar">
+
+        <!-- Avatar vacío: mi perfil -->
+        <button *ngIf="!user?.image && identity?._id === user?._id" type="button"
+          class="profile-avatar profile-avatar-empty" (click)="profileAvatarInput.click()">
+
+          <span class="add-avatar-icon">+</span>
+
+        </button>
+
+        <!-- Avatar vacío: perfil de otro usuario -->
+        <div *ngIf="!user?.image && identity?._id !== user?._id"
+          class="profile-avatar profile-avatar-empty profile-avatar-disabled">
+
+          <span class="empty-user-icon">👤</span>
+
+        </div>
+
+        <input #profileAvatarInput type="file" accept="image/*" hidden (change)="uploadAvatar($event)">
+
+        <button class="story-bubble" *ngIf="getUserStory(user._id)"
+          (click)="$event.stopPropagation(); openUserStories(user._id)">
+
+          {{ getUserStory(user._id)?.icon }}
+
+        </button>
+
+        <h1>{{ user.name }} {{ user.surname }}</h1>
+        <span>@{{ user.nick }}</span>
+
+      </div>
+
+      <a routerLink="/home" class="home-btn">🏠 Inicio</a>
+
+      <p class="profile-bio">
+        {{ user.bio || 'Este usuario todavía no ha añadido una biografía.' }}
+      </p>
+
+      <div class="profile-personal-info">
+        <span *ngIf="user.location">📍 {{ user.location }}</span>
+        <span *ngIf="user.profession">💼 {{ user.profession }}</span>
+        <span *ngIf="user.website">🌐 {{ user.website }}</span>
+      </div>
+
+      <div *ngIf="identity && identity._id !== user._id" class="profile-actions">
+        <button *ngIf="!following" (click)="followUser()">Seguir</button>
+        <button *ngIf="following" (click)="unfollowUser()">Dejar de seguir</button>
+      </div>
+
+      <div *ngIf="identity && identity._id !== user._id" class="follow-status">
+        <span *ngIf="followedBy">⭐ Te sigue</span>
+        <span *ngIf="!followedBy">✖ No me sigue</span>
+      </div>
+      <!-- MUNDO DEL USUARIO -->
+      <section class="profile-world-card" *ngIf="profileWorld">
+
+        <h3 class="profile-world-title">
+          🌍 Mundo de {{ user?.nick }}
+        </h3>
+
+        <div class="profile-world-preview" (click)="openProfileWorld()">
+
+          @switch (profileWorld.worldType) {
+
+          @case ('garden') {
+
+          <app-garden-world [elements]="profileWorld.visualElements || []" mode="aside">
+          </app-garden-world>
+
+          }
+
+          @case ('stadium') {
+
+          <app-stadium-world [elements]="profileWorld.visualElements || []" mode="aside">
+          </app-stadium-world>
+
+          }
+
+          @case ('space-base') {
+
+          <app-space-base-world [elements]="profileWorld.visualElements || []" mode="aside">
+          </app-space-base-world>
+
+          }
+
+          }
+
+        </div>
+
+      </section>
+    </section>
+
+    <!-- PUBLICACIONES -->
+    <article *ngFor="let pub of publications; let i = index" class="wall-post" (click)="openPost(pub, i)">
+
+      <div class="shared-publication-banner" *ngIf="pub.isShared">
+        🔁 @{{ user?.nick }} compartió esta publicación
+
+        <small>
+          Publicación original de
+          @{{ pub.user?.nick }}
+        </small>
+      </div>
+
+      <p class="post-date">
+        {{ pub.created_at | date:'dd/MM/yyyy HH:mm' }}
+      </p>
+
+      <p *ngIf="pub.text?.trim()">
+        {{ pub.text }}
+      </p>
+
+      <div class="media-wrapper" *ngIf="pub.files?.length">
+
+        <ng-container *ngFor="let file of pub.files">
+
+          <img *ngIf="!isVideo(file)" [src]="url + 'publication/media/' + file">
+
+          <video *ngIf="isVideo(file)" [src]="url + 'publication/media/' + file" controls>
+          </video>
+
+        </ng-container>
+
+      </div>
+
+      <button *ngIf="
+    identity &&
+    (
+      pub.user?._id === identity._id ||
+      identity?.role === 'ROLE_ADMIN'
+    )
+  " class="delete-btn" (click)="$event.stopPropagation(); deletePublication(pub._id)">
+        x
+      </button>
+      <div class="publication-share-area">
+
+        <button type="button" class="publication-share-btn" [class.publication-share-btn--active]="hasShared(pub)"
+          [disabled]="
+      pub.shareLoading ||
+      isOwnPublication(pub)
+    " (click)="
+      $event.stopPropagation();
+      sharePublication(pub)
+    ">
+          <span aria-hidden="true">🔁</span>
+
+          {{
+          pub.shareLoading
+          ? 'Guardando...'
+          : isOwnPublication(pub)
+          ? 'En tu perfil'
+          : hasShared(pub)
+          ? 'Dejar de compartir'
+          : 'Compartir'
+          }}
+        </button>
+
+        <span class="publication-share-count">
+          {{ getSharesCount(pub) }}
+        </span>
+
+        <small class="publication-share-message" *ngIf="pub.shareMessage">
+          {{ pub.shareMessage }}
+        </small>
+
+      </div>
+    </article>
+
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" *ngIf="selectedPost" (click)="closePost()">
+    <button class="close-btn" (click)="closePost()">
+      cerrar
+    </button>
+
+    <div class="modal-content profile-modal-content" (click)="$event.stopPropagation()">
+
+      <!-- MEDIA -->
+      <div class="modal-media">
+
+        <img *ngIf="selectedPost.files?.length && !isVideo(selectedPost.files[0])"
+          [src]="url + 'publication/media/' + selectedPost.files[0]">
+
+        <video *ngIf="selectedPost.files?.length && isVideo(selectedPost.files[0])"
+          [src]="url + 'publication/media/' + selectedPost.files[0]" controls>
+        </video>
+
+      </div>
+      <button class="nav-btn left" *ngIf="selectedIndex > 0" (click)="$event.stopPropagation(); prevPost()">
+        ‹
+      </button>
+
+      <button class="nav-btn right" *ngIf="selectedIndex < publications.length - 1"
+        (click)="$event.stopPropagation(); nextPost()">
+        ›
+      </button>
+
+
+      <!-- INFO / COMENTARIOS -->
+      <div class="modal-info" (click)="closeReactionDropdowns()">
+
+        <p class="modal-post-text" *ngIf="selectedPost.text">
+          {{ selectedPost.text }}
+        </p>
+
+        <!--<button class="like-btn" [class.active]="hasLiked(selectedPost)"
+                    [class.heart-beat]="likeAnimationPostId === selectedPost._id"
+                    [style.color]="identity?.likeColor || '#00aaff'"
+                    (click)="$event.stopPropagation(); likePublication(selectedPost)">
+                    <span class="heart-icon">
+                        {{ hasLiked(selectedPost) ? '♥' : '♡' }}
+                    </span>
+
+                    <strong>
+                        {{ selectedPost.likes?.length || 0 }}
+                    </strong>
+                </button>-->
+
+        <div class="like-area">
+
+          <div class="likes">
+            <button class="like-btn" [class.active]="hasLiked(selectedPost)"
+              [class.heart-beat]="likeAnimationPostId === selectedPost._id"
+              [style.color]="identity?.likeColor || '#00aaff'"
+              (click)="$event.stopPropagation(); likePublication(selectedPost)">
+              <span class="like-icon">
+                {{ hasLiked(selectedPost) ? '♥' : '♡' }}
+              </span>
+
+              <strong>
+                {{ selectedPost.likes?.length || 0 }}
+              </strong>
+            </button>
+
+            <button class="likes-toggle" *ngIf="selectedPost.likes?.length > 0"
+              (click)="$event.stopPropagation(); toggleLikes(selectedPost._id)">
+              Ver likes
+            </button>
+
+            <div class="likes-dropdown" (click)="$event.stopPropagation()" *ngIf="openLikesPostId === selectedPost._id">
+              <div class="like-user" *ngFor="let like of selectedPost.likes">
+                {{ like.name }} {{ like.surname }}
+
+                <small>@{{ like.nick }}</small>
+              </div>
+            </div>
+          </div>
+          <div class="dislikes-container reply-btn dislikes">
+
+            <button class="likes-toggle" *ngIf="selectedPost.dislikes?.length > 0"
+              (click)="$event.stopPropagation(); toggleDislikes(selectedPost._id)">
+              Ver dislikes
+            </button>
+
+            <div class="likes-dropdown dislikes-dropdown" (click)="$event.stopPropagation()"
+              *ngIf="openDislikesPostId === selectedPost._id">
+
+              <div class="like-user" *ngFor="let dislike of selectedPost.dislikes">
+                {{ dislike.name }} {{ dislike.surname }}
+                <small>@{{ dislike.nick }}</small>
+              </div>
+
+            </div>
+            <div class="disBoxButon">
+              <div class="disCont">
+                <strong class="reaction-counter" [style.color]="identity?.likeColor || '#00aaff'">
+                  {{ selectedPost.dislikes?.length || 0 }}
+                </strong>
+              </div>
+              <div class="disButon">
+                <button class="like-btn dislike-btn" [class.active]="hasDisliked(selectedPost)"
+                  [style.color]="identity?.likeColor || '#00aaff'"
+                  (click)="$event.stopPropagation(); dislikePublication(selectedPost)">
+
+                  <span class="dislike-icon">
+                    ✖_✖
+                  </span>
+
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="comments comments-scroll">
+
+          <input [(ngModel)]="selectedPost.newComment" placeholder="Grita lo que quieras...">
+
+          <button class="comment-send-btn" (click)="$event.stopPropagation(); addComment(selectedPost)">
+            Gritar
+          </button>
+
+          <div class="comment-thread" *ngFor="let comment of (selectedPost.comments || [])">
+
+            <div class="comment-card">
+
+              <strong>{{ comment.user?.name }} {{ comment.user?.surname }}</strong>
+              <small>@{{ comment.user?.nick }}</small>
+
+              <div class="comment-date">
+                {{ comment.created_at | date:'dd/MM/yyyy HH:mm' }}
+              </div>
+
+              <p>{{ comment.text }}</p>
+              <div class="cajaButton">
+                <div class="subcaja1">
+
+                  <div class="buttonReply1">
+                    <button class="like-btn" (click)="$event.stopPropagation(); likeComment(selectedPost, comment)"
+                      [style.color]="hasLikedComment(comment) ? (identity?.likeColor || '#00aaff') : '#888'">
+                      ♥ {{ comment.likes?.length || 0 }}
+                    </button>
+                  </div>
+
+                  <div class="buttonReply2">
+                    <strong class="cont"
+                      [style.color]="hasDislikedComment(comment) ? (identity?.likeColor || '#00aaff') : '#888'">
+                      {{ comment.dislikes?.length || 0 }}
+                    </strong>
+                    <button class="like-btn dislike-btn"
+                      [style.color]="hasDislikedComment(comment) ? (identity?.likeColor || '#00aaff') : '#888'"
+                      (click)="$event.stopPropagation(); dislikeComment(selectedPost, comment)">
+                      ✖_✖
+                    </button>
+                  </div>
+                </div>
+                <button class="comment-send-btn" (click)="comment.showReply = !comment.showReply">
+                  Responder
+                </button>
+                <button class="delete-comment-btn" *ngIf="
+                                    identity &&
+                                    (
+                                        comment.user?._id == identity?._id ||
+                                        comment.user == identity?._id ||
+                                        identity?.role === 'ROLE_ADMIN'
+                                    )
+                                    " [style.backgroundColor]="identity?.deleteCommentBackgroundColor || '#ff4444'"
+                  [style.borderColor]="identity?.deleteCommentBackgroundColor || '#ff4444'"
+                  [style.color]="identity?.deleteCommentTextColor || '#ffffff'"
+                  (click)="$event.stopPropagation(); deleteComment(selectedPost, comment._id)">
+                  Callar grito
+                </button>
+
+                <div *ngIf="comment.showReply" class="reply-box">
+                  <input [(ngModel)]="comment.replyText" placeholder="Responder...">
+
+                  <button class="comment-send-btn"
+                    (click)="$event.stopPropagation(); replyComment(selectedPost, comment)">
+                    Enviar
+                  </button>
+                </div>
+
+                <div class="subcaja2">
+
+                </div>
+              </div>
+
+              <div class="replies-thread" *ngIf="comment.replies?.length">
+
+                <div class="reply-card" *ngFor="let reply of (comment.replies || [])">
+                  <div class="text">
+                    <strong>{{ reply.user?.name }} {{ reply.user?.surname }}</strong>
+
+                    <small>@{{ reply.user?.nick }}</small>
+
+                    <div class="reply-date">
+                      {{ reply.created_at | date:'dd/MM/yyyy HH:mm' }}
+                    </div>
+
+                    <p>{{ reply.text }}</p>
+                  </div>
+
+                  <div class="buttonReply1">
+                    <button class="like-btn" (click)="$event.stopPropagation(); likeReply(selectedPost, comment, reply)"
+                      [style.color]="hasLikedComment(reply) ? (identity?.likeColor || '#00aaff') : '#888'">
+                      ♥ {{ reply.likes?.length || 0 }}
+                    </button>
+                  </div>
+
+                  <div class="buttonReply2">
+                    <strong class="cont"
+                      [style.color]="hasDislikedComment(reply) ? (identity?.likeColor || '#00aaff') : '#888'">
+                      {{ reply.dislikes?.length || 0 }}
+                    </strong>
+                    <button class="like-btn dislike-btn"
+                      [style.color]="hasDislikedComment(reply) ? (identity?.likeColor || '#00aaff') : '#888'"
+                      (click)="$event.stopPropagation(); dislikeReply(selectedPost, comment, reply)">
+                      ✖_✖
+                    </button>
+                  </div>
+                  <div class="callar">
+                    <button class="delete-reply-btn" *ngIf="
+                                            identity &&
+                                            (
+                                            reply.user?._id == identity?._id ||
+                                            reply.user == identity?._id ||
+                                            identity?.role === 'ROLE_ADMIN'
+                                            )
+                                            "
+                      [style.backgroundColor]="identity?.deleteReplyBackgroundColor || '#ff4444'"
+                      [style.borderColor]="identity?.deleteReplyBackgroundColor || '#ff4444'"
+                      [style.color]="identity?.deleteReplyTextColor || '#ffffff'"
+                      (click)="$event.stopPropagation(); deleteReply(selectedPost, comment, reply)">
+                      X
+                    </button>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+  <div class="story-modal-overlay" *ngIf="selectedStory !== null" (click)="closeStory()">
+    <div class="story-modal" (click)="$event.stopPropagation()">
+
+      <button class="story-close" (click)="closeStory()">X</button>
+
+      <h3>{{ selectedStory.user?.name }} {{ selectedStory.user?.surname }}</h3>
+      <small>@{{ selectedStory.user?.nick }}</small>
+
+      <p *ngIf="selectedStory.text">{{ selectedStory.text }}</p>
+
+      <div class="story-media-frame">
+
+        <img *ngIf="!isVideo(selectedStory.media)" [src]="url + 'story/media/' + selectedStory.media"
+          class="story-media">
+
+        <video *ngIf="isVideo(selectedStory.media)" [src]="url + 'story/media/' + selectedStory.media"
+          class="story-media" controls>
+        </video>
+
+        <button class="story-nav left" *ngIf="selectedStoryUserId && getUserStories(selectedStoryUserId).length > 1"
+          (click)="$event.stopPropagation(); prevStory()">
+          ❮
+        </button>
+
+        <button class="story-nav right" *ngIf="selectedStoryUserId && getUserStories(selectedStoryUserId).length > 1"
+          (click)="$event.stopPropagation(); nextStory()">
+          ❯
+        </button>
+
+      </div>
+
+      <div class="story-dots" *ngIf="selectedStoryUserId && getUserStories(selectedStoryUserId).length > 1">
+
+        <span *ngFor="let story of getUserStories(selectedStoryUserId!); let i = index" class="story-dot"
+          [class.active]="i === selectedStoryIndex">
+        </span>
+
+      </div>
+
+      <button class="add-story-btn" *ngIf="identity && selectedStory?.user?._id == identity._id"
+        (click)="$event.stopPropagation(); openNewStoryForm()">
+
+        Añadir historia
+
+      </button>
+
+    </div>
+  </div>
+
+</div>

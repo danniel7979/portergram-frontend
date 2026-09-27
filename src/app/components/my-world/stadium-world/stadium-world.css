@@ -1,0 +1,1202 @@
+/* =========================================================
+   ESCENA GENERAL
+   ========================================================= */
+
+.stadium-scene {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 18px;
+  background:
+    linear-gradient(to bottom,
+      #6ec6ff 0%,
+      #9ddcff 45%,
+      #d8f1ff 100%);
+}
+
+/* =====================================================
+   GROUND - SOLO ASIDE
+   ===================================================== */
+
+.stadium-scene--aside .stadium-ground .stadium-element__image {
+  transform: scale(5.65);
+  transform-origin: center center;
+}
+
+
+/* =========================================================
+   MODO ASIDE
+   ========================================================= */
+
+.stadium-scene--aside {
+  height: 260px;
+  min-height: 260px;
+}
+
+
+/* =========================================================
+   MODO FULL
+   ========================================================= */
+
+.stadium-scene--full {
+  width: 100%;
+  height: 78vh;
+  min-height: 650px;
+  max-height: 950px;
+}
+
+
+/* =========================================================
+   CIELO
+   ========================================================= */
+
+.stadium-sky {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  z-index: 0;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(to bottom,
+      rgba(68, 170, 255, 0.95) 0%,
+      rgba(130, 210, 255, 0.85) 42%,
+      rgba(220, 245, 255, 0.9) 70%,
+      rgba(115, 180, 90, 0.65) 100%);
+}
+
+
+/* =========================================================
+   ELEMENTOS GENERALES
+   ========================================================= */
+
+.stadium-element {
+  position: absolute;
+
+  transform: translate(-50%, -50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  pointer-events: none;
+
+  transform-origin: center center;
+
+  transition:
+    left 0.6s ease,
+    top 0.6s ease,
+    width 0.6s ease,
+    height 0.6s ease,
+    scale 0.6s ease,
+    opacity 0.4s ease;
+}
+
+
+/* =========================================================
+   IMÁGENES
+   ========================================================= */
+
+.stadium-element__image {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  user-select: none;
+
+  pointer-events: none;
+
+  -webkit-user-drag: none;
+
+  filter:
+    drop-shadow(0 6px 8px rgba(0, 0, 0, 0.18));
+}
+
+
+/* =========================================================
+   TERRENO
+   ========================================================= */
+
+.stadium-ground {
+  z-index: 1;
+}
+
+.stadium-ground .stadium-element__image {
+  object-fit: fill;
+}
+
+
+/* =========================================================
+   GRADAS
+   ========================================================= */
+
+
+.stadium-stands.stage-small {
+  opacity: 0.9;
+}
+
+.stadium-stands.stage-medium {
+  opacity: 0.95;
+}
+
+.stadium-stands.stage-large,
+.stadium-stands.stage-complete {
+  opacity: 1;
+}
+
+
+/* =========================================================
+   PÚBLICO
+   ========================================================= */
+
+.stadium-crowd .stadium-element__image {
+  filter:
+    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.22));
+}
+
+
+/* =========================================================
+   MARCADOR
+   ========================================================= */
+
+.stadium-scoreboard {
+  z-index: 6;
+}
+
+.stadium-scoreboard .stadium-element__image {
+  filter:
+    drop-shadow(0 5px 7px rgba(0, 0, 0, 0.35));
+}
+
+
+/* =========================================================
+   BANDERAS
+   ========================================================= */
+
+.stadium-flags {
+  z-index: 7;
+}
+
+.stadium-flags .stadium-element__image {
+  transform-origin: bottom center;
+}
+
+
+.stadium-team-flags--full .stadium-team-flag {
+  width: 70px;
+  height: 42px;
+}
+
+
+.stadium-team-flags--aside .stadium-team-flag {
+  width: 30px;
+  height: 18px;
+
+  border-radius: 3px;
+}
+
+
+/* =========================================================
+   FUEGOS ARTIFICIALES
+   ========================================================= */
+
+.stadium-fireworks {
+  z-index: 10;
+
+  mix-blend-mode: screen;
+}
+
+.stadium-fireworks .stadium-element__image {
+  filter:
+    drop-shadow(0 0 12px rgba(255, 255, 255, 0.8));
+}
+
+
+/* =========================================================
+   ANIMACIONES
+   ========================================================= */
+
+.animation-stands-appear,
+.animation-crowd-appear,
+.animation-lights-appear,
+.animation-scoreboard-appear,
+.animation-flags-appear,
+.animation-fireworks-appear {
+  animation:
+    stadiumAppear 0.75s ease both;
+}
+
+.animation-stands-grow,
+.animation-crowd-grow,
+.animation-lights-grow,
+.animation-scoreboard-upgrade,
+.animation-flags-grow,
+.animation-fireworks-grow {
+  animation:
+    stadiumGrow 0.8s ease both;
+}
+
+.animation-stands-complete,
+.animation-crowd-complete,
+.animation-lights-complete,
+.animation-scoreboard-complete,
+.animation-flags-complete {
+  animation:
+    stadiumComplete 1s ease both;
+}
+
+.animation-fireworks-complete {
+  animation:
+    stadiumFireworks 1.8s ease-in-out infinite alternate;
+}
+
+
+/* =========================================================
+   KEYFRAMES
+   ========================================================= */
+
+@keyframes stadiumFadeIn {
+
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+
+@keyframes stadiumAppear {
+
+  from {
+    opacity: 0;
+    transform:
+      translate(-50%, -50%) scale(0.75);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translate(-50%, -50%) scale(1);
+  }
+}
+
+
+@keyframes stadiumGrow {
+
+  0% {
+    transform:
+      translate(-50%, -50%) scale(1);
+  }
+
+  50% {
+    transform:
+      translate(-50%, -50%) scale(1.08);
+  }
+
+  100% {
+    transform:
+      translate(-50%, -50%) scale(1);
+  }
+}
+
+
+@keyframes stadiumComplete {
+
+  0% {
+    transform:
+      translate(-50%, -50%) scale(0.95);
+    opacity: 0.75;
+  }
+
+  60% {
+    transform:
+      translate(-50%, -50%) scale(1.06);
+    opacity: 1;
+  }
+
+  100% {
+    transform:
+      translate(-50%, -50%) scale(1);
+  }
+}
+
+
+@keyframes stadiumFireworks {
+
+  from {
+    opacity: 0.65;
+    filter:
+      brightness(0.9) saturate(1);
+  }
+
+  to {
+    opacity: 1;
+    filter:
+      brightness(1.35) saturate(1.35);
+  }
+}
+
+
+/* =========================================================
+   AJUSTES SOLO PARA ASIDE
+   ========================================================= */
+
+.stadium-scene--aside .stadium-element__image {
+  filter:
+    drop-shadow(0 3px 4px rgba(0, 0, 0, 0.16));
+}
+
+.stadium-scene--aside .stadium-fireworks {
+  opacity: 0.9;
+}
+
+
+/* =========================================================
+   AJUSTES SOLO PARA FULL
+   ========================================================= */
+
+.stadium-scene--full {
+  border-radius: 22px;
+}
+
+.stadium-scene--full .stadium-element__image {
+  image-rendering: auto;
+}
+
+.stadium-crowd-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.stadium-crowd-sector {
+  position: absolute;
+  object-fit: contain;
+}
+
+.stadium-element--stadium-stands,
+.stadium-element--stadium-crowd {
+  z-index: 5 !important;
+}
+
+/* GRADA SUPERIOR */
+.crowd-back {
+  width: 74%;
+  left: 13%;
+  top: 5%;
+}
+
+/* LATERAL IZQUIERDO */
+.crowd-left {
+  width: 23%;
+  left: 1%;
+  top: 24%;
+}
+
+/* LATERAL DERECHO */
+.crowd-right {
+  width: 23%;
+  right: 1%;
+  top: 24%;
+}
+
+/* GRADA INFERIOR */
+.crowd-front {
+  width: 74%;
+  left: 13%;
+  bottom: 4%;
+}
+
+.stadium-scene--day {
+  background:
+    linear-gradient(to bottom,
+      #73cfff 0%,
+      #bceaff 55%,
+      #e8f8ff 100%);
+}
+
+.stadium-scene--dawn {
+  background:
+    linear-gradient(to bottom,
+      #5e7fa8 0%,
+      #e5a36f 55%,
+      #f8d9a7 100%);
+}
+
+.stadium-scene--sunset {
+  background:
+    linear-gradient(to bottom,
+      #3b416f 0%,
+      #d87555 55%,
+      #f0b268 100%);
+}
+
+.stadium-scene--night {
+  background:
+    linear-gradient(to bottom,
+      #050914 0%,
+      #0b1730 55%,
+      #12254a 100%);
+}
+
+.stadium-scene--night .stadium-element__image {
+  filter:
+    brightness(0.72) saturate(0.9);
+}
+
+.stadium-scene--night .stadium-element--stadium-ground .stadium-element__image {
+  filter:
+    brightness(0.9) saturate(1.05);
+}
+
+/*//////////////////////////////////////////////////////////////////////////////////////////////*/
+
+/* Solo para comprobar posición */
+.debug-beam {
+  background-color: transparent;
+
+  clip-path: polygon(45% 0%,
+      55% 0%,
+      100% 100%,
+      0% 100%);
+
+  z-index: 4;
+}
+
+/* =====================================================
+   MARCADOR INTERACTIVO
+   ===================================================== */
+.stadium-live-score {
+  position: absolute;
+
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(5, 10, 20, 0.88);
+
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 10px;
+
+  color: white;
+
+  z-index: 100;
+}
+
+
+.stadium-score-flag {
+  padding: 0;
+
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 4px;
+
+  overflow: hidden;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+
+.stadium-score-flag img {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+
+.stadium-score-number {
+  text-align: center;
+}
+
+/* =========================================
+   MARCADOR FULL
+   ========================================= */
+
+.stadium-live-score--full {
+  top: 4%;
+
+  padding: 8px 12px;
+  gap: 8px;
+}
+
+.stadium-live-score--full .stadium-score-flag {
+  width: 54px;
+  height: 32px;
+}
+
+.stadium-live-score--full .stadium-score-number {
+  min-width: 24px;
+  font-size: 27px;
+}
+
+
+/* =========================================
+   MARCADOR ASIDE
+   ========================================= */
+
+.stadium-live-score--aside {
+  top: 5%;
+
+  padding: 4px 6px;
+  gap: 4px;
+
+  border-radius: 6px;
+}
+
+.stadium-live-score--aside .stadium-score-flag {
+  width: 25px;
+  height: 15px;
+
+  border-radius: 2px;
+}
+
+.stadium-live-score--aside .stadium-score-number {
+  min-width: 12px;
+  font-size: 15px;
+}
+
+.stadium-live-score--aside .stadium-live-score__separator {
+  font-size: 12px;
+}
+
+
+.stadium-live-score--full .stadium-score-flag {
+  width: 54px;
+  height: 32px;
+}
+
+
+.stadium-live-score--full .stadium-score-number {
+  min-width: 22px;
+
+  font-size: 27px;
+}
+
+
+.stadium-live-score--aside .stadium-score-flag {
+  width: 25px;
+  height: 15px;
+
+  border-radius: 2px;
+}
+
+
+.stadium-live-score--aside .stadium-score-number {
+  min-width: 9px;
+
+  font-size: 13px;
+}
+
+
+.stadium-live-score--aside .stadium-live-score__separator {
+  font-size: 11px;
+}
+
+.stadium-live-score__team {
+  font-size: 12px;
+  letter-spacing: 1px;
+
+  opacity: 0.8;
+}
+
+.stadium-element {
+  border: none;
+  outline: none;
+  background: transparent;
+}
+
+
+/* =====================================================
+   ANIMACIÓN DE GOL
+   ===================================================== */
+
+.stadium-live-score--goal {
+  animation:
+    stadiumScoreGoal 0.45s ease 2;
+}
+
+
+@keyframes stadiumScoreGoal {
+
+  0% {
+    transform:
+      translateX(-50%) scale(1);
+  }
+
+  50% {
+    transform:
+      translateX(-50%) scale(1.14);
+  }
+
+  100% {
+    transform:
+      translateX(-50%) scale(1);
+  }
+}
+
+
+.stadium-goal-message {
+  position: absolute;
+
+  top: 18%;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  z-index: 110;
+
+  font-size: 38px;
+  font-weight: 900;
+
+  color: white;
+
+  text-shadow:
+    0 0 8px #00f7ff,
+    0 0 18px #00f7ff;
+
+  pointer-events: none;
+
+  animation:
+    stadiumGoalMessage 1.2s ease both;
+}
+
+
+@keyframes stadiumGoalMessage {
+
+  0% {
+    opacity: 0;
+    transform:
+      translateX(-50%) scale(0.7);
+  }
+
+  25% {
+    opacity: 1;
+    transform:
+      translateX(-50%) scale(1.2);
+  }
+
+  100% {
+    opacity: 0;
+    transform:
+      translateX(-50%) scale(1);
+  }
+}
+
+
+/* =====================================================
+   HITBOX PORTERÍAS
+   ===================================================== */
+
+/* FULL */
+
+.stadium-scene--full .stadium-goal-hitbox--left {
+  left: 42%;
+  top: 46.5%;
+
+  width: 10%;
+  height: 20%;
+}
+
+.stadium-scene--full .stadium-goal-hitbox--right {
+  left: 57%;
+  top: 46.5%;
+
+  width: 10%;
+  height: 20%;
+}
+
+
+/* ASIDE */
+
+.stadium-scene--aside .stadium-goal-hitbox--left {
+  left: 42%;
+  top: 56%;
+
+  width: 12%;
+  height: 24%;
+}
+
+.stadium-scene--aside .stadium-goal-hitbox--right {
+  left: 58%;
+  top: 56%;
+
+  width: 12%;
+  height: 24%;
+}
+
+.stadium-goal-hitbox {
+    position: absolute;
+
+    z-index: 200;
+
+    border: none;
+    background: transparent;
+
+    cursor: pointer;
+
+    transform: translate(-50%, -50%);
+}
+
+.stadium-scene--aside .stadium-goal-hitbox--left {
+    left: 35%;
+    top: 52%;
+    width: 14%;
+    height: 22%;
+}
+
+.stadium-scene--aside .stadium-goal-hitbox--right {
+    left: 68%;
+    top: 52%;
+    width: 14%;
+    height: 22%;
+}
+
+/* =====================================================
+   BANDERAS DEL MARCADOR
+   ===================================================== */
+
+/* =====================================================
+   SELECTOR
+   ===================================================== */
+
+.stadium-flag-selector-overlay {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    rgba(0, 0, 0, 0.65);
+
+  z-index: 500;
+}
+
+
+.stadium-flag-selector {
+  position: relative;
+
+  width: min(520px, 90%);
+
+  padding: 22px;
+
+  border-radius: 16px;
+
+  background: #0a0f18;
+
+  color: white;
+
+  box-shadow:
+    0 0 20px rgba(0, 247, 255, 0.35);
+}
+
+
+.stadium-flag-selector__close {
+  position: absolute;
+
+  top: 10px;
+  right: 12px;
+
+  border: none;
+
+  background: transparent;
+
+  color: white;
+
+  font-size: 20px;
+
+  cursor: pointer;
+}
+
+.stadium-flag-selector--aside {
+  width: calc(100% - 16px);
+  max-height: 210px;
+
+  padding: 10px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  box-sizing: border-box;
+}
+
+.stadium-flag-selector--aside .stadium-flag-grid {
+  grid-template-columns: 1fr;
+
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.stadium-flag-selector-overlay--aside {
+  align-items: flex-start;
+
+  padding: 8px;
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+}
+
+.stadium-flag-selector--full {
+  width: min(520px, 90%);
+  max-height: 70vh;
+
+  padding: 22px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.stadium-flag-selector--full .stadium-flag-grid {
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.stadium-flag-selector::-webkit-scrollbar {
+  width: 7px;
+}
+
+.stadium-flag-selector::-webkit-scrollbar-track {
+  background: #111;
+}
+
+.stadium-flag-selector::-webkit-scrollbar-thumb {
+  background: #00f7ff;
+  border-radius: 10px;
+}
+
+.stadium-flag-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 14px;
+
+  margin-top: 18px;
+}
+
+
+.stadium-flag-option {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 10px;
+
+  border:
+    1px solid rgba(255, 255, 255, 0.25);
+
+  border-radius: 10px;
+
+  background:
+    rgba(255, 255, 255, 0.05);
+
+  color: white;
+
+  cursor: pointer;
+}
+
+
+.stadium-flag-option img {
+  width: 70px;
+  height: 42px;
+
+  object-fit: cover;
+
+  border-radius: 5px;
+}
+
+.stadium-fireworks-container {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: visible;
+
+  pointer-events: none;
+}
+
+
+.stadium-firework {
+  position: absolute;
+
+  width: 18%;
+  height: auto;
+
+  transform:
+    translate(-50%, -50%) scale(var(--firework-scale, 1));
+
+  transform-origin: center;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  animation:
+    stadiumFireworkBurst 2.8s ease-out infinite;
+}
+
+
+@keyframes stadiumFireworkBurst {
+
+  0% {
+    opacity: 0;
+    transform:
+      translate(-50%, -50%) scale(0.15);
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  45% {
+    opacity: 1;
+
+    transform:
+      translate(-50%, -50%) scale(var(--firework-scale, 1));
+  }
+
+  100% {
+    opacity: 0;
+
+    transform:
+      translate(-50%, -50%) scale(calc(var(--firework-scale, 1) * 1.15));
+  }
+}
+
+.stadium-trophies-container {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: visible;
+
+  pointer-events: none;
+
+  z-index: 30;
+}
+
+
+.stadium-trophy {
+  position: absolute;
+
+  width: 14%;
+  height: auto;
+
+  transform:
+    translate(-50%, -50%) scale(var(--trophy-scale, 1));
+
+  transform-origin: center bottom;
+
+  pointer-events: none;
+
+  filter:
+    drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
+
+  animation:
+    trophyAppear 0.6s ease both;
+}
+
+
+@keyframes trophyAppear {
+
+  from {
+    opacity: 0;
+
+    transform:
+      translate(-50%, -50%) scale(0.4);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translate(-50%, -50%) scale(var(--trophy-scale, 1));
+  }
+}
+
+
+/* =====================================================
+   RESET
+   ===================================================== */
+
+.stadium-score-reset {
+  position: absolute;
+
+  top: 5%;
+  right: 4%;
+
+  z-index: 100;
+
+  padding: 7px 11px;
+
+  border-radius: 9px;
+
+  border:
+    1px solid rgba(255, 255, 255, 0.5);
+
+  background:
+    rgba(0, 0, 0, 0.65);
+
+  color: white;
+
+  cursor: pointer;
+}
+
+.stadium-goal-hitbox {
+  background: transparent;
+}
+
+.stadium-field-light-layer {
+    position: absolute;
+
+    left: 50%;
+    top: 47%;
+
+    width: 36%;
+    height: 40%;
+
+    transform: translate(-50%, -50%);
+
+    border-radius: 48%;
+
+    background: radial-gradient(
+        ellipse at center,
+        rgba(255, 255, 225, 0.48) 0%,
+        rgba(255, 255, 225, 0.28) 42%,
+        rgba(230, 240, 255, 0.10) 68%,
+        transparent 82%
+    );
+
+    filter: blur(7px);
+
+    z-index: 8;
+
+    pointer-events: none;
+}
+
+.stadium-live-score--aside {
+  top: 5%;
+
+  padding: 4px 8px;
+  gap: 5px;
+
+  font-size: 11px;
+
+  border-radius: 6px;
+}
+
+.stadium-live-score--aside strong {
+  min-width: 12px;
+
+  font-size: 15px;
+}
+
+.stadium-live-score--aside .stadium-live-score__team {
+  font-size: 7px;
+
+  letter-spacing: 0;
+}
+
+.stadium-live-score--aside .stadium-live-score__team {
+  display: none;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .stadium-scene--full {
+    height: 72vh;
+    min-height: 520px;
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .stadium-scene--aside {
+    height: 220px;
+    min-height: 220px;
+  }
+
+  .stadium-scene--full {
+    height: 68vh;
+    min-height: 440px;
+    border-radius: 14px;
+  }
+
+}
+
+.stadium-scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.stadium-element {
+  position: absolute;
+
+  transform: translate(-50%, -50%);
+}
+
+.stadium-element__image {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   REDUCIR ANIMACIONES
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .stadium-element,
+  .stadium-element__image {
+    transition: none !important;
+    animation: none !important;
+  }
+
+}

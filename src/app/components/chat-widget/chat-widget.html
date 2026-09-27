@@ -1,0 +1,87 @@
+<button class="chat-toggle" (click)="toggleChat()">
+    💬
+
+    <span class="chat-badge" *ngIf="totalUnread > 0">
+        {{ totalUnread }}
+    </span>
+</button>
+
+<div class="chat-widget" *ngIf="open">
+
+    <div class="chat-header">
+        <button class="chat-back" *ngIf="selectedUser" (click)="backToUsers()">
+            ←
+        </button>
+
+        <h3 *ngIf="!selectedUser">Mensajes</h3>
+
+        <h3 *ngIf="selectedUser">
+            {{ selectedUser.name }} {{ selectedUser.surname }}
+        </h3>
+        <span class="chat-badge" *ngIf="totalUnread > 0">
+            {{ totalUnread }}
+        </span>
+
+        <button class="chat-close" (click)="open = false">
+            ✖
+        </button>
+    </div>
+
+    <!-- LISTA DE USUARIOS -->
+    <div class="chat-users" *ngIf="!selectedUser">
+
+        <div class="chat-user" *ngFor="let user of users" (click)="openChat(user)">
+
+            <div class="chat-avatar-wrap">
+
+                <img *ngIf="user.image" [src]="url + 'get-image-user/' + user.image">
+
+                <span class="status-dot" [class.online]="user.online" [class.offline]="!user.online"></span>
+
+            </div>
+
+            <div>
+                <strong>{{ user.name }} {{ user.surname }}</strong>
+                <small>@{{ user.nick }}</small>
+            </div>
+            <span class="user-badge" *ngIf="unreadByUser[user._id] > 0">
+                {{ unreadByUser[user._id] }}
+            </span>
+
+        </div>
+
+        <p class="empty-chat" *ngIf="users.length === 0">
+            No sigues a ningún usuario.
+        </p>
+
+    </div>
+
+    <!-- CHAT -->
+    <div class="chat-body" *ngIf="selectedUser">
+
+        <div class="chat-message" *ngFor="let message of messages" [class.mine]="isMine(message)"
+            [class.buzz-message]="message.type === 'buzz'">
+            <p>{{ message.text }}</p>
+
+            <span>
+                {{ message.created_at * 1000 | date:'dd/MM/yyyy HH:mm' }}
+            </span>
+        </div>
+
+    </div>
+
+    <div class="chat-input" *ngIf="selectedUser">
+        <button class="buzz-btn" (click)="sendBuzz()">
+            ⚡
+        </button>
+        <input [(ngModel)]="newMessage" placeholder="Escribe un mensaje..." (keyup.enter)="sendMessage()">
+
+        <button (click)="sendMessage()">
+            Enviar
+        </button>
+    </div>
+    <div class="chat-notification" *ngIf="showNotification">
+        {{ notificationText }}
+    </div>
+
+</div>

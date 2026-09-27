@@ -1,0 +1,371 @@
+<div class="users-page" [ngClass]="theme"
+  [style.backgroundImage]="globalBackground ? 'url(' + globalBackground + ')' : null">
+
+  <a class="users-home-link" routerLink="/home">← Inicio</a>
+
+  <!-- SIGO -->
+  <section class="users-section" *ngIf="showSection('following')">
+
+    <h2>Usuarios que sigo</h2>
+
+    <input class="user-search" [(ngModel)]="searchFollowing" placeholder="Buscar usuarios que sigo...">
+
+    <div class="users-grid">
+
+      <div class="user-card" *ngFor="let user of limitedUsers(filterUsers(followingUsers, searchFollowing))">
+
+        <!-- Espacio fijo para avatar -->
+        <div class="user-avatar-slot">
+
+          <div class="user-avatar-story-container">
+
+            <img *ngIf="user.image" [src]="url + 'get-image-user/' + user.image" class="user-avatar">
+
+            <div *ngIf="!user.image" class="user-avatar-placeholder">
+              {{ user.name?.charAt(0) }}
+            </div>
+
+            <button *ngIf="getUserStory(user._id)" class="user-story-bubble" (click)="openUserStories(user._id)">
+
+              {{ getUserStory(user._id)?.icon || '★' }}
+
+            </button>
+
+          </div>
+
+        </div>
+
+        <!-- Espacio fijo para nombre y nick -->
+        <div class="user-info-slot">
+
+          <h3>
+            {{ user.name }} {{ user.surname }}
+          </h3>
+
+          <p>
+            @{{ user.nick }}
+          </p>
+
+        </div>
+
+        <!-- Espacio fijo para acciones -->
+        <div class="user-actions-slot">
+
+          <div class="action-row">
+            <a class="profile-btn" [routerLink]="['/profile', user._id]">
+              Ver perfil
+            </a>
+          </div>
+
+          <div class="action-row">
+
+            <button class="follow-btn" *ngIf="!isFollowing(user)" (click)="followUser(user)">
+              Seguir
+            </button>
+
+            <button class="unfollow-btn" *ngIf="isFollowing(user)" (click)="unfollowUser(user)">
+              Dejar de seguir
+            </button>
+
+          </div>
+
+          <div class="action-row">
+
+            <button type="button" class="message-btn" (click)="openPrivateChat(user)">
+              Enviar mensaje
+            </button>
+
+          </div>
+
+          <!-- Reserva espacio aunque no sea administrador -->
+          <div class="action-row admin-row">
+
+            <button *ngIf="identity?.role === 'ROLE_ADMIN'" class="ban-btn" (click)="toggleBan(user)">
+              {{ user.banned ? 'Desbanear' : 'Banear' }}
+            </button>
+
+          </div>
+
+        </div>
+
+        <!-- Estado siempre en la misma posición -->
+        <div class="follow-status">
+
+          <span class="follows-me" *ngIf="user.followedBy">
+            ⭐ Te sigue
+          </span>
+
+          <span class="not-follows" *ngIf="!user.followedBy">
+            ✖ No te sigue
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <a class="see-more-btn" *ngIf="pageMode === 'summary' && followingUsers.length > 4" routerLink="/users/following">
+    Ver más
+  </a>
+
+  <!-- ME SIGUEN -->
+  <section class="users-section" *ngIf="showSection('followers')">
+
+    <h2>Usuarios que me siguen</h2>
+
+    <input class="user-search" [(ngModel)]="searchFollowers" placeholder="Buscar usuarios que me siguen...">
+
+    <div class="users-grid">
+      <div class="user-card" *ngFor="let user of limitedUsers(filterUsers(followersUsers, searchFollowers))">
+
+        <!-- Espacio fijo para avatar -->
+        <div class="user-avatar-slot">
+
+          <div class="user-avatar-story-container">
+
+            <img *ngIf="user.image" [src]="url + 'get-image-user/' + user.image" class="user-avatar">
+
+            <div *ngIf="!user.image" class="user-avatar-placeholder">
+              {{ user.name?.charAt(0) }}
+            </div>
+
+            <button *ngIf="getUserStory(user._id)" class="user-story-bubble" (click)="openUserStories(user._id)">
+
+              {{ getUserStory(user._id)?.icon || '★' }}
+
+            </button>
+
+          </div>
+
+        </div>
+
+        <!-- Espacio fijo para nombre y nick -->
+        <div class="user-info-slot">
+
+          <h3>
+            {{ user.name }} {{ user.surname }}
+          </h3>
+
+          <p>
+            @{{ user.nick }}
+          </p>
+
+        </div>
+
+        <!-- Espacio fijo para acciones -->
+        <div class="user-actions-slot">
+
+          <div class="action-row">
+            <a class="profile-btn" [routerLink]="['/profile', user._id]">
+              Ver perfil
+            </a>
+          </div>
+
+          <div class="action-row">
+
+            <button class="follow-btn" *ngIf="!isFollowing(user)" (click)="followUser(user)">
+              Seguir
+            </button>
+
+            <button class="unfollow-btn" *ngIf="isFollowing(user)" (click)="unfollowUser(user)">
+              Dejar de seguir
+            </button>
+
+          </div>
+
+          <div class="action-row">
+
+            <button type="button" class="message-btn" (click)="openPrivateChat(user)">
+              Enviar mensaje
+            </button>
+
+          </div>
+
+          <!-- Reserva espacio aunque no sea administrador -->
+          <div class="action-row admin-row">
+
+            <button *ngIf="identity?.role === 'ROLE_ADMIN'" class="ban-btn" (click)="toggleBan(user)">
+              {{ user.banned ? 'Desbanear' : 'Banear' }}
+            </button>
+
+          </div>
+
+        </div>
+
+        <!-- Estado siempre en la misma posición -->
+        <div class="follow-status">
+
+          <span class="follows-me" *ngIf="user.followedBy">
+            ⭐ Te sigue
+          </span>
+
+          <span class="not-follows" *ngIf="!user.followedBy">
+            ✖ No te sigue
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+  <a class="see-more-btn" *ngIf="pageMode === 'summary' && followersUsers.length > 4" routerLink="/users/followers">
+    Ver más
+  </a>
+
+  <!-- TODOS -->
+  <section class="users-section" *ngIf="showSection('all')">
+    <h2>Usuarios de la plataforma</h2>
+
+    <input class="user-search" [(ngModel)]="searchAll" placeholder="Buscar usuarios de la plataforma...">
+
+    <div class="users-grid">
+
+
+      <div class="user-card" *ngFor="let user of limitedUsers(filterUsers(allUsers, searchAll))">
+
+        <!-- Espacio fijo para avatar -->
+        <div class="user-avatar-slot">
+
+          <div class="user-avatar-story-container">
+
+            <img *ngIf="user.image" [src]="url + 'get-image-user/' + user.image" class="user-avatar">
+
+            <div *ngIf="!user.image" class="user-avatar-placeholder">
+              {{ user.name?.charAt(0) }}
+            </div>
+
+            <button *ngIf="getUserStory(user._id)" class="user-story-bubble" (click)="openUserStories(user._id)">
+
+              {{ getUserStory(user._id)?.icon || '★' }}
+
+            </button>
+
+          </div>
+
+        </div>
+
+        <!-- Espacio fijo para nombre y nick -->
+        <div class="user-info-slot">
+
+          <h3>
+            {{ user.name }} {{ user.surname }}
+          </h3>
+
+          <p>
+            @{{ user.nick }}
+          </p>
+
+        </div>
+
+        <!-- Espacio fijo para acciones -->
+        <div class="user-actions-slot">
+
+          <div class="action-row">
+            <a class="profile-btn" [routerLink]="['/profile', user._id]">
+              Ver perfil
+            </a>
+          </div>
+
+          <div class="action-row">
+
+            <button class="follow-btn" *ngIf="!isFollowing(user)" (click)="followUser(user)">
+              Seguir
+            </button>
+
+            <button class="unfollow-btn" *ngIf="isFollowing(user)" (click)="unfollowUser(user)">
+              Dejar de seguir
+            </button>
+
+          </div>
+
+          <div class="action-row">
+
+            <button type="button" class="message-btn" (click)="openPrivateChat(user)">
+              Enviar mensaje
+            </button>
+
+          </div>
+
+          <!-- Reserva espacio aunque no sea administrador -->
+          <div class="action-row admin-row">
+
+            <button *ngIf="identity?.role === 'ROLE_ADMIN'" class="ban-btn" (click)="toggleBan(user)">
+              {{ user.banned ? 'Desbanear' : 'Banear' }}
+            </button>
+
+          </div>
+
+        </div>
+
+        <!-- Estado siempre en la misma posición -->
+        <div class="follow-status">
+
+          <span class="follows-me" *ngIf="user.followedBy">
+            ⭐ Te sigue
+          </span>
+
+          <span class="not-follows" *ngIf="!user.followedBy">
+            ✖ No te sigue
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+  <a class="see-more-btn" *ngIf="pageMode === 'summary' && allUsers.length > 4" routerLink="/users/all">
+    Ver más
+  </a>
+
+
+  <div class="story-viewer-overlay" *ngIf="selectedStory">
+    <div class="story-viewer-box">
+
+
+      <div class="story-owner">
+        {{ selectedStory.user?.name }} {{ selectedStory.user?.surname }}
+      </div>
+
+      <small class="story-nick">
+        @{{ selectedStory.user?.nick }}
+      </small>
+
+      <img *ngIf="selectedStory.media && !isVideo(selectedStory.media)"
+        [src]="url + 'story/media/' + selectedStory.media" class="story-viewer-media">
+
+      <video *ngIf="selectedStory.media && isVideo(selectedStory.media)"
+        [src]="url + 'story/media/' + selectedStory.media" class="story-viewer-media" controls>
+      </video>
+      <button class="story-close-btn" (click)="closeStory()">×</button>
+
+      <button class="story-arrow story-arrow-left"
+        *ngIf="selectedStoryUserId && getUserStories(selectedStoryUserId).length > 1" (click)="prevStory()">
+        ‹
+      </button>
+
+
+      <button class="story-arrow story-arrow-right"
+        *ngIf="selectedStoryUserId && getUserStories(selectedStoryUserId).length > 1" (click)="nextStory()">
+        ›
+      </button>
+
+      <p class="story-text" *ngIf="selectedStory.text">
+        {{ selectedStory.text }}
+      </p>
+
+      <div class="story-points">
+        <span *ngFor="let story of getUserStories(selectedStoryUserId!); let i = index"
+          [class.active]="i === selectedStoryIndex">
+        </span>
+      </div>
+
+    </div>
+  </div>
+</div>

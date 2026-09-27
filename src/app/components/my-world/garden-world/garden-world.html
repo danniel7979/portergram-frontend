@@ -1,0 +1,126 @@
+<div class="garden-scene" [style.--moon-light]="moonLight" [ngClass]="[
+    mode === 'aside'
+      ? 'garden-scene--aside'
+      : 'garden-scene--full',
+
+    getCactusStageClass(),
+
+    'garden-scene--' + timePhase
+  ]">
+
+  <!-- CIELO -->
+  <div class="garden-sky"></div>
+
+  <!-- SOL -->
+  <div class="garden-sun">
+    ☀️
+  </div>
+
+  <!-- LUNA -->
+  <div *ngIf="timePhase === 'night'" class="garden-moon" [style.left.%]="moonX" [style.top.%]="moonY">
+    {{ moonPhase }}
+  </div>
+
+  <!-- NUBES -->
+  <div class="garden-cloud garden-cloud--one">
+    ☁️
+  </div>
+
+  <div class="garden-cloud garden-cloud--two">
+    ☁️
+  </div>
+
+  <!-- ELEMENTOS DEL MUNDO -->
+  <div *ngFor="
+      let element of elements;
+      trackBy: trackByElementId
+    " [class]="getElementClass(element)" [attr.data-variant]="element.variant" [attr.data-stage]="element.stageId"
+    [style.left.%]="getElementX(element)" [style.top.%]="getElementY(element)"
+    [style.width.%]="getElementWidth(element)" [style.height.%]="getElementHeight(element)"
+    [style.scale]="getElementScale(element)" [style.rotate]="getElementRotation(element) + 'deg'"
+    [style.z-index]="element.layer">
+
+    <!-- PATOS INDIVIDUALES -->
+    <div *ngIf="element.id === 'garden-ducks'" class="garden-ducks-container">
+      <img *ngFor="
+          let duck of getDucksForStage(element);
+          let index = index
+        " [src]="duck.image" [class]="'garden-duck ' + duck.className" [style.--duck-delay]="duck.delay + 's'"
+        [style.--duck-duration]="duck.duration + 's'" [style.--duck-scale]="duck.scale"
+         (click)="playDuckClick($event)" [attr.alt]="'Pato ' + (index + 1)" draggable="false">
+    </div>
+
+    <!-- CAMINO DE TIERRA DE LOS GNOMOS -->
+    <div *ngIf="element.id === 'garden-gnome-path'" class="gnome-path-container">
+
+      <img src="assets/my-world/garden/gnomes/path/gnome-path.webp" class="gnome-path-image"
+        [style.clip-path]="getGnomePathClip(element)" alt="Camino de los gnomos" draggable="false">
+
+    </div>
+
+    <!--luciernagas-->
+    <div *ngIf="
+    timePhase === 'sunset' ||
+    timePhase === 'night'
+  " class="fireflies">
+
+      <span *ngFor="let firefly of getVisibleFireflies(); let i = index" class="firefly"
+        [ngClass]="'firefly-route-' + (i % 4)" [style.left.%]="firefly.x" [style.top.%]="firefly.y"
+        [style.animation-delay.s]="firefly.delay" [style.animation-duration.s]="firefly.duration">
+      </span>
+
+    </div>
+
+    <!-- IMAGEN NORMAL -->
+    <img *ngIf="
+    element.id !== 'garden-ducks' &&
+    element.id !== 'garden-frog' &&
+    element.id !== 'garden-gnome-path' &&
+    getElementImage(element)
+  " [src]="getElementImage(element)" class="garden-element__image" [attr.alt]="element.name" draggable="false">
+
+    <!-- RANA + NENÚFAR -->
+    <div *ngIf="element.id === 'garden-frog'" class="garden-frog-container">
+
+      <!-- NENÚFAR: NO SE ANIMA -->
+      <img *ngIf="element.stageId === 'lilypad'" src="assets/my-world/garden/frog/lilypad.webp" class="garden-lilypad"
+        draggable="false">
+
+      <!-- RANA: ES LO ÚNICO QUE SALTA -->
+      <img [src]="getElementImage(element)" class="garden-frog-image" [ngClass]="{
+      'frog-jump-shore':
+        jumpingFrog &&
+        element.stageId === 'shore',
+
+      'frog-jump-lilypad':
+        jumpingFrog &&
+        element.stageId === 'lilypad'
+    }" (click)="onElementClick(element, $event)" draggable="false">
+
+    </div>
+
+    <!-- EMOJI DE RESPALDO -->
+    <span *ngIf="
+    element.id !== 'garden-ducks' &&
+    element.id !== 'garden-frog' &&
+    element.id !== 'garden-gnome-path' &&
+    element.id !== 'garden-ground' &&
+    !getElementImage(element)
+  " class="garden-element__symbol">
+
+      {{ getElementSymbol(element) }}
+
+    </span>
+
+    <!-- ZONA DE CLIC -->
+    <button *ngIf="
+        isInteractiveElement(element) &&
+        element.id !== 'garden-frog'
+    " type="button" class="garden-element__hitbox" [ngClass]="
+        'garden-element__hitbox--' + element.id
+      " [attr.aria-label]="element.name" (click)="onElementClick(element, $event)">
+    </button>
+
+  </div>
+
+</div>

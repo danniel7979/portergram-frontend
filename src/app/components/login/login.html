@@ -1,0 +1,88 @@
+<div class="login-page">
+
+  <div class="login-box">
+
+    <h1>Portergram</h1>
+    <p class="subtitle">Tu red social profesional</p>
+
+    <div class="private-preview-entry" *ngIf="privatePreview">
+      <p>Vista privada preparada para revisar Portergram.</p>
+      <button type="button" (click)="enterPrivatePreview()">Entrar en la versión privada</button>
+    </div>
+
+    <div class="toggle-auth">
+      <button type="button" [class.active]="mode === 'login'" (click)="mode = 'login'">
+        Login
+      </button>
+
+      <button type="button" [class.active]="mode === 'register'" (click)="mode = 'register'">
+        Registro
+      </button>
+    </div>
+
+    <div *ngIf="status === 'success'" class="success">
+      Operación correcta
+    </div>
+
+    <div *ngIf="status === 'error'" class="error">
+      Ha ocurrido un error
+    </div>
+
+    <!-- LOGIN -->
+    <form *ngIf="mode === 'login'" #loginForm="ngForm" (ngSubmit)="onSubmit()">
+      <input type="email" name="email" [(ngModel)]="user.email" placeholder="Email" autocomplete="email" required>
+
+      <input type="password" name="password" [(ngModel)]="user.password" placeholder="Contraseña"
+        autocomplete="current-password" required>
+
+      <button type="submit" [disabled]="!loginForm.form.valid">
+        Entrar
+      </button>
+
+      <button type="button" class="forgot-btn" *ngIf="mode === 'login'" (click)="showRecovery()">
+        ¿Olvidaste tu contraseña?
+      </button>
+    </form>
+
+    <!-- REGISTRO -->
+    <form *ngIf="mode === 'register'" #registerForm="ngForm" (ngSubmit)="onRegister()">
+      <input type="text" name="name" [(ngModel)]="registerUser.name" placeholder="Nombre" required>
+
+      <input type="text" name="surname" [(ngModel)]="registerUser.surname" placeholder="Apellidos" required>
+
+      <input type="text" name="nick" [(ngModel)]="registerUser.nick" placeholder="Nick" required>
+
+      <input type="email" name="registerEmail" [(ngModel)]="registerUser.email" placeholder="Email" autocomplete="email"
+        required>
+
+      <input type="password" name="registerPassword" [(ngModel)]="registerUser.password" placeholder="Contraseña"
+        autocomplete="new-password" required>
+
+      <button type="submit" [disabled]="!registerForm.form.valid">
+        Crear cuenta
+      </button>
+    </form>
+    <!-- RECUPERAR CONTRASEÑA -->
+    <form *ngIf="mode === 'recovery'" #recoveryForm="ngForm" (ngSubmit)="onForgotPassword()">
+      <input type="email" name="recoveryEmail" [(ngModel)]="recoveryEmail" placeholder="Introduce tu email"
+        autocomplete="email" required>
+
+      <button type="submit" [disabled]="!recoveryForm.form.valid">
+        Recuperar contraseña
+      </button>
+
+      <p *ngIf="recoveryLink" class="reset-link">
+        {{ recoveryLink }}
+      </p>
+
+      <a *ngIf="recoveryLink" [href]="recoveryLink" class="reset-link">
+        Abrir enlace de recuperación
+      </a>
+
+      <button type="button" class="forgot-btn" (click)="mode = 'login'">
+        Volver al login
+      </button>
+    </form>
+  </div>
+
+</div>

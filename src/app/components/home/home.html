@@ -1,0 +1,791 @@
+<div class="home" [ngClass]="theme" [style.--scroll-color]="identity?.scrollColor || '#00f7ff'"
+  [style.backgroundImage]="globalBackground ? 'url(' + globalBackground + ')' : null">
+  <button type="button" class="mobile-nav-toggle" (click)="toggleMobileNav()" [attr.aria-expanded]="mobileNavOpen"
+    aria-controls="portergram-navigation" aria-label="Abrir navegación">
+    <span aria-hidden="true">☰</span>
+    <span>Portergram</span>
+  </button>
+
+  <button *ngIf="mobileNavOpen" type="button" class="mobile-nav-backdrop" (click)="closeMobileNav()"
+    aria-label="Cerrar navegación"></button>
+
+  <aside id="portergram-navigation" class="sidebar" [class.sidebar--open]="mobileNavOpen"
+    [style.background-image]="navBackground ? 'url(' + navBackground + ')' : ''">
+    <button type="button" class="mobile-nav-close" (click)="closeMobileNav()" aria-label="Cerrar navegación">
+      ✕
+    </button>
+    <h2>Portergram</h2>
+
+    <div class="avatar-container">
+
+      <!-- Avatar existente -->
+      <img *ngIf="identity?.image; else emptyAvatar" [src]="url + 'get-image-user/' + identity.image" class="avatar"
+        alt="Avatar">
+
+      <!-- Avatar vacío: todo el círculo es clicable -->
+      <ng-template #emptyAvatar>
+
+        <button type="button" class="avatar avatar-empty" title="Añadir foto de perfil" (click)="fileAvatar.click()">
+
+          <span class="add-avatar-icon">+</span>
+
+        </button>
+
+      </ng-template>
+
+      <!-- Selector de archivo oculto -->
+      <input #fileAvatar type="file" accept="image/png, image/jpeg, image/webp" hidden (change)="uploadAvatar($event)">
+
+      <button type="button" class="story-bubble" (click)="openStory(getMyStory())">
+
+        {{ getMyStory()?.icon || '+' }}
+
+      </button>
+
+    </div>
+
+    <div class="user-box" *ngIf="identity">
+      <p>{{ identity.name }} {{ identity.surname }}</p>
+      <small>@{{ identity.nick }}</small>
+    </div>
+
+    <ul>
+      <li><a routerLink="/home" (click)="closeMobileNav()">🏠 Inicio</a></li>
+      <li *ngIf="identity">
+        <a [routerLink]="['/profile', identity._id]" (click)="closeMobileNav()">👤 Mi perfil</a>
+      </li>
+      <li><a routerLink="/users" (click)="closeMobileNav()">👥 Usuarios</a></li>
+      <li><a routerLink="/messages" (click)="closeMobileNav()">💬 Mensajes</a></li>
+      <li><a routerLink="/settings" (click)="closeMobileNav()">⚙️ Configuración</a></li>
+      <li><a href="#" (click)="logout()">🚪 Salir</a></li>
+      <section class="my-world-card" id="my-world-card">
+        <header class="my-world-card__header">
+          <h3>{{ getWorldIcon() }} Mi Mundo</h3>
+
+          <button *ngIf="hasWorld && selectedWorld" type="button" (click)="openFullWorld()">
+            Entrar
+          </button>
+        </header>
+
+        <p *ngIf="myWorldLoading" role="status">
+          Cargando Mi Mundo...
+        </p>
+
+        <div *ngIf="myWorldError && !myWorldLoading" class="my-world-card__empty" role="alert">
+          <p>{{ myWorldError }}</p>
+          <button type="button" (click)="loadMyWorldAside()">
+            Reintentar
+          </button>
+        </div>
+
+        <div *ngIf="!hasWorld && !myWorldLoading && !myWorldError" class="my-world-card__empty">
+          <p>No tienes ningún mundo seleccionado.</p>
+
+          <button type="button" (click)="openWorldSelection()">
+            Elegir mundo
+          </button>
+          <p *ngIf="worldSelectionError" role="alert">
+            {{ worldSelectionError }}
+          </p>
+        </div>
+
+        <ng-container *ngIf="hasWorld && selectedWorld && !myWorldError">
+          <div *ngIf="myWorld as world" class="my-world-card__preview" (click)="openFullWorld()">
+
+            @switch (selectedWorld) {
+            @case ('garden') {
+            <app-garden-world [elements]="world.visualElements || []" mode="aside">
+            </app-garden-world>
+            }
+
+            @case ('stadium') {
+            <app-stadium-world [elements]="world.visualElements || []" mode="aside">
+            </app-stadium-world>
+            }
+
+            @case ('space-base') {
+            <app-space-base-world [elements]="world.visualElements || []" mode="aside">
+            </app-space-base-world>
+            }
+            }
+          </div>
+
+          <div class="my-world-card__actions">
+            <button type="button" (click)="openWorldSelection()">
+              Cambiar mundo
+            </button>
+
+            <button type="button" class="remove-world-btn" (click)="removeSelectedWorld()">
+              No tener mundo
+            </button>
+          </div>
+        </ng-container>
+      </section>
+    </ul>
+  </aside>
+
+  <!-- Contenido -->
+  <main class="content">
+    <div class="home-counters">
+
+      <a class="counter-card" routerLink="/users/followers">
+        <strong>{{ followersCount }}</strong>
+        <span>Seguidores</span>
+      </a>
+
+      <a class="counter-card" routerLink="/users/following">
+        <strong>{{ followingCount }}</strong>
+        <span>Siguiendo</span>
+      </a>
+
+    </div>
+
+    <div class="new-post">
+
+      <div class="new-post-header">
+        <img *ngIf="identity?.image" [src]="url + 'get-image-user/' + identity.image" class="avatar-small">
+        <span>{{ identity?.name }}</span>
+      </div>
+
+      <textarea [(ngModel)]="newPublication.text" placeholder="¿Qué quieres gritar?"></textarea>
+
+      <div class="new-post-actions">
+
+        <label class="upload-btn">
+          📷 Subir archivo
+
+          <input type="file" multiple (change)="fileChangeEventPub($event)" accept="image/*,video/*" hidden>
+        </label>
+
+        <button type="button" class="camera-open-btn" (click)="openCamera()">
+          📷 Abrir cámara
+        </button>
+
+        <span class="file-name" *ngIf="fileName">
+          ✔ {{ fileName }}
+        </span>
+
+        <div class="selected-files-panel" *ngIf="filesToUploadPub.length > 1">
+
+          <h4>
+            Archivos seleccionados
+          </h4>
+
+          <div class="selected-file-item" *ngFor="let file of filesToUploadPub; let i = index"
+            [class.selected]="selectedFilesToRemove.has(i)" (click)="toggleFileSelection(i)">
+
+            <input type="checkbox" [checked]="selectedFilesToRemove.has(i)" (click)="$event.stopPropagation()"
+              (change)="toggleFileSelection(i)">
+
+            <span class="file-icon">
+              {{ file.type.startsWith('video/') ? '🎥' : '🖼️' }}
+            </span>
+
+            <span class="selected-file-name">
+              {{ file.name }}
+            </span>
+
+          </div>
+
+
+          <button type="button" class="remove-selected-files-btn" *ngIf="selectedFilesToRemove.size > 0"
+            (click)="removeSelectedFiles()">
+            🗑 Quitar seleccionados
+          </button>
+
+        </div>
+
+        <button class="publish-btn" [disabled]="!newPublication.text && filesToUploadPub.length === 0"
+          (click)="addPublication()">
+          Publicar
+        </button>
+
+      </div>
+
+
+      <!-- CÁMARA -->
+      <div class="camera-panel" *ngIf="showCamera">
+
+        <div class="camera-preview-container">
+
+          <video id="cameraPreview" class="camera-preview" autoplay playsinline muted>
+          </video>
+
+        </div>
+
+
+        <div class="camera-controls">
+
+          <button *ngIf="availableCameras.length > 1" type="button" (click)="switchCamera()" [disabled]="isRecording">
+            🔄 Cambiar cámara
+          </button>
+
+
+          <button type="button" class="capture-photo-btn" (click)="capturePhoto()" [disabled]="isRecording">
+            📸 Capturar imagen
+          </button>
+
+
+          <button *ngIf="!isRecording" type="button" (click)="startVideoRecording()">
+            🎥 Grabar vídeo
+          </button>
+
+
+          <button *ngIf="isRecording" type="button" (click)="stopVideoRecording()">
+            ⏹ Detener grabación
+          </button>
+
+
+          <button type="button" (click)="closeCamera()">
+            ✖ Cerrar
+          </button>
+
+        </div>
+
+
+        <div class="recording-indicator" *ngIf="isRecording">
+          🔴 Grabando...
+        </div>
+
+      </div>
+
+    </div> <!-- CIERRA new-post -->
+
+
+    <!-- PUBLICACIONES -->
+    <div class="feed">
+      <div *ngFor="let pub of publications" class="post">
+        <div class="btn-conta">
+          <button *ngIf="
+                        identity &&
+                        (
+                        pub.user?._id === identity._id ||
+                        identity.role === 'ROLE_ADMIN'
+                        )
+                        " class="delete-btn" (click)="deletePublication(pub._id)">
+            x
+          </button>
+        </div>
+
+
+        <div class="post-header">
+
+          <div class="post-user-info">
+
+            <div class="post-user-top">
+
+              <h3>{{ pub.user?.name }} {{ pub.user?.surname }}</h3>
+
+              <button class="story-bubble-mini" *ngIf="getUserStory(pub.user?._id)"
+                (click)="$event.stopPropagation(); openUserStories(pub.user._id)">
+
+                {{ getUserStory(pub.user?._id)?.icon }}
+
+              </button>
+
+            </div>
+
+            <small>@{{ pub.user?.nick }}</small>
+
+          </div>
+
+        </div>
+
+        <p class="post-date">
+          {{ pub.created_at | date:'dd/MM/yyyy HH:mm' }}
+        </p>
+
+        <p *ngIf="pub.text?.trim()">{{ pub.text }}</p>
+
+        <div class="publication-files" *ngIf="pub.files?.length">
+
+          <div class="publication-carousel" *ngIf="pub.files?.length">
+
+            <button class="carousel-btn left" *ngIf="pub.files.length > 1" (click)="previousFile(pub)">
+
+              ❮
+
+            </button>
+
+            <div class="carousel-content">
+
+              <img *ngIf="!isVideo(pub.files[pub.currentFile])"
+                [src]="url + 'publication/media/' + pub.files[pub.currentFile]" class="post-image">
+
+              <video *ngIf="isVideo(pub.files[pub.currentFile])"
+                [src]="url + 'publication/media/' + pub.files[pub.currentFile]" class="post-video" controls>
+              </video>
+
+            </div>
+
+            <button class="carousel-btn right" *ngIf="pub.files.length > 1" (click)="nextFile(pub)">
+
+              ❯
+
+            </button>
+
+          </div>
+          <div class="carousel-dots" *ngIf="pub.files.length > 1">
+
+            <span *ngFor="let file of pub.files; let i = index" class="dot" [class.active]="i === pub.currentFile"
+              (click)="pub.currentFile = i">
+
+            </span>
+
+          </div>
+
+        </div>
+
+        <div class="like-area">
+          <div class="botones-Container">
+
+            <div class="botonesCajaIz">
+              <div class="botones1">
+                <button class="like-btn" [class.active]="hasLiked(pub)"
+                  [class.heart-beat]="likeAnimationPostId === pub._id" [style.color]="identity?.likeColor || '#00aaff'"
+                  (click)="likePublication(pub)">
+                  <span class="heart-icon">
+                    {{ hasLiked(pub) ? '♥' : '♡' }}
+                  </span>
+
+                  <strong>
+                    {{ pub.likes?.length || 0 }}
+                  </strong>
+                </button>
+              </div>
+              <div class="botones2">
+                <button *ngIf="pub.likes?.length > 0" class="likes-toggle" (click)="toggleLikes(pub._id)">
+
+                  Ver likes
+
+                </button>
+              </div>
+            </div>
+
+            <div class="botones4">
+              <div class="buttonDis">
+                <button *ngIf="pub.dislikes?.length > 0" class="dislikes-toggle"
+                  (click)="$event.stopPropagation(); toggleDislikes(pub._id)">
+
+                  Ver dislikes
+
+                </button>
+              </div>
+              <div class="contaConta">
+                <span class="reaction-counter" [style.color]="identity?.likeColor || '#00aaff'">
+                  {{ pub.dislikes?.length || 0 }}
+                </span>
+              </div>
+              <div class="contadorDis">
+                <button class="publication-dislike-btn" (click)="dislikePublication(pub)" [style.color]="hasDislikedPublication(pub)
+                        ? (identity?.likeColor || '#00aaff')
+                        : '#888'">
+
+                  ✖_✖
+
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="likes-dropdown" *ngIf="openLikesPostId === pub._id && pub.likes?.length > 0">
+
+            <div class="like-user" *ngFor="let like of pub.likes">
+
+              {{ like.name }}
+              {{ like.surname }}
+
+              <small>
+                @{{ like.nick }}
+              </small>
+
+            </div>
+
+          </div>
+          <div class="likes-dropdown" *ngIf="openDislikesPostId === pub._id && pub.dislikes?.length > 0">
+            <div class="like-user" *ngFor="let dislike of pub.dislikes">
+              {{ dislike.name }} {{ dislike.surname }}
+              <small>@{{ dislike.nick }}</small>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="publication-share-area">
+
+          <button type="button" class="publication-share-btn" [class.publication-share-btn--active]="hasShared(pub)"
+            [disabled]="
+      pub.shareLoading ||
+      isOwnPublication(pub)
+    " [attr.title]="
+      isOwnPublication(pub)
+        ? 'Esta publicación ya aparece en tu perfil'
+        : hasShared(pub)
+          ? 'Dejar de compartir'
+          : 'Compartir en mi perfil'
+    " (click)="
+      $event.stopPropagation();
+      sharePublication(pub)
+    ">
+            <span aria-hidden="true">🔁</span>
+
+            <span *ngIf="!pub.shareLoading">
+              {{
+              isOwnPublication(pub)
+              ? 'En tu perfil'
+              : hasShared(pub)
+              ? 'Dejar de compartir'
+              : 'Compartir'
+              }}
+            </span>
+
+            <span *ngIf="pub.shareLoading">
+              Guardando...
+            </span>
+          </button>
+
+          <span class="publication-share-count">
+            {{ getSharesCount(pub) }}
+            {{
+            getSharesCount(pub) === 1
+            ? 'compartido'
+            : 'compartidos'
+            }}
+          </span>
+
+          <small class="publication-share-message" *ngIf="pub.shareMessage">
+            {{ pub.shareMessage }}
+          </small>
+
+        </div>
+
+        <div class="comments">
+          <input [(ngModel)]="pub.newComment" placeholder="Grita lo que quieras..." />
+
+          <button (click)="addComment(pub._id, pub.newComment)">
+            Gritar
+          </button>
+
+          <div *ngFor="let comment of (pub.comments || [])" class="comment-item">
+
+            <!-- usuario comentario -->
+
+            <strong>
+              {{ comment.user?.name }}
+              {{ comment.user?.surname }}
+            </strong>
+
+            <small>
+              @{{ comment.user?.nick }}
+            </small>
+
+            <!-- fecha -->
+            <div class="comment-date">
+              {{ comment.createdAt | date:'dd/MM/yyyy HH:mm' }}
+            </div>
+
+            <!-- texto comentario -->
+            <p>{{ comment.text }}</p>
+
+            <div class="botones">
+              <div class="botonesB">
+                <button class="reply-btn" (click)="comment.showReply = !comment.showReply">
+                  Responder
+                </button>
+                <button class="comment-like-btn" (click)="likeComment(pub, comment)" [style.color]="hasLikedComment(comment)
+                                ? (identity?.likeColor || '#00aaff')
+                                : '#888'">
+
+                  <span class="heart">♥</span>
+                  <span>{{ comment.likes?.length || 0 }}</span>
+
+                </button>
+              </div>
+              <div class="botonCont">
+                <div class="cont">
+                  <span class="reaction-counter" [style.color]="identity?.likeColor || '#00aaff'">
+                    {{ comment.dislikes?.length || 0 }}
+                  </span>
+                </div>
+                <div class="button">
+                  <button class="comment-dislike-btn" (click)="dislikeComment(pub, comment)"
+                    [style.--reaction-color]="identity?.likeColor || '#00aaff'"
+                    [style.border-color]="identity?.likeColor || '#00aaff'" [style.color]="hasDislikedComment(comment)
+                            ? (identity?.likeColor || '#00aaff')
+                            : '#888'">
+
+                    ✖_✖
+
+                  </button>
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- botones comentario -->
+            <div class="comment-actions">
+
+
+
+              <button *ngIf="
+    comment.user?._id == identity?._id ||
+    comment.user?._id == identity?.sub
+  " (click)="deleteComment(pub._id, comment._id)" class="delete-comment-btn">
+
+                Callar grito
+
+              </button>
+
+            </div>
+
+            <!-- caja respuesta -->
+            <div *ngIf="comment.showReply" class="reply-box">
+
+              <input [(ngModel)]="comment.replyText" placeholder="Responder...">
+
+              <button (click)="replyComment(pub, comment)">
+                Enviar
+              </button>
+
+            </div>
+
+            <!-- respuestas -->
+            <div class="reply-item" *ngFor="let reply of comment.replies">
+
+              <strong>
+                {{ reply.user?.name }}
+              </strong>
+
+              <small>
+                @{{ reply.user?.nick }}
+              </small>
+
+              <p>
+                {{ reply.text }}
+              </p>
+
+              <div class="botones3">
+
+                <button class="reply-like-btn" (click)="likeReply(pub, comment, reply)" [style.color]="hasLikedComment(reply)
+                                    ? (identity?.likeColor || '#00aaff')
+                                    : '#888'">
+
+                  <span class="heart">♥</span>
+                  <span>{{ reply.likes?.length || 0 }}</span>
+
+                </button>
+
+                <div class="reply-dislike-box">
+                  <div class="reply-cont">
+                    <span class="reaction-counter" [style.color]="identity?.likeColor || '#00aaff'">
+                      {{ reply.dislikes?.length || 0 }}
+                    </span>
+                  </div>
+
+                  <div class="reply-btn">
+                    <button class="comment-dislike-btn" (click)="dislikeReply(pub, comment, reply)"
+                      [style.--reaction-color]="identity?.likeColor || '#00aaff'" [style.color]="hasDislikedComment(reply)
+    ? (identity?.likeColor || '#00aaff')
+    : '#888'">
+
+                      ✖_✖
+
+                    </button>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="story-modal-overlay" *ngIf="selectedStory" (click)="closeStory()">
+
+      <div class="story-modal" (click)="$event.stopPropagation()">
+
+        <button class="story-close" (click)="closeStory()">X</button>
+
+        <h3>
+          {{ selectedStory.user?.name }} {{ selectedStory.user?.surname }}
+        </h3>
+
+        <small>@{{ selectedStory.user?.nick }}</small>
+
+        <p *ngIf="selectedStory.text">
+          {{ selectedStory.text }}
+        </p>
+
+        <img *ngIf="selectedStory.media && !isVideo(selectedStory.media)"
+          [src]="url + 'story/media/' + selectedStory.media" class="story-media">
+
+        <video *ngIf="selectedStory.media && isVideo(selectedStory.media)"
+          [src]="url + 'story/media/' + selectedStory.media" class="story-media" controls>
+        </video>
+        <div class="story-dots" *ngIf="selectedStoryUserId && getUserStories(selectedStoryUserId).length > 1">
+          <span *ngFor="let story of getUserStories(selectedStoryUserId!); let i = index" class="story-dot"
+            [class.active]="i === selectedStoryIndex">
+          </span>
+        </div>
+
+        <button class="add-story-btn" *ngIf="selectedStory?.user?._id === identity?._id"
+          (click)="$event.stopPropagation(); openNewStoryForm()">
+          Añadir historia
+        </button>
+
+        <button class="story-nav left" *ngIf="selectedStoryUserId && getUserStories(selectedStoryUserId).length > 1"
+          (click)="$event.stopPropagation(); prevStory()">
+          ❮
+        </button>
+
+        <button class="story-nav right" *ngIf="selectedStoryUserId && getUserStories(selectedStoryUserId).length > 1"
+          (click)="$event.stopPropagation(); nextStory()">
+          ❯
+        </button>
+
+      </div>
+
+    </div>
+    <div class="story-form-overlay" *ngIf="showStoryForm" (click)="showStoryForm = false">
+
+      <div class="story-form-modal" (click)="$event.stopPropagation()">
+
+        <button class="story-close" (click)="showStoryForm = false">X</button>
+
+        <h3>Nueva historia</h3>
+
+        <label>Icono</label>
+        <select [(ngModel)]="storyIcon">
+          <option value="💥">💥</option>
+          <option value="🔥">🔥</option>
+          <option value="⚡">⚡</option>
+          <option value="⭐">⭐</option>
+          <option value="👀">👀</option>
+          <option value="🚀">🚀</option>
+          <option value="🎵">🎵</option>
+          <option value="😎">😎</option>
+        </select>
+
+        <label>Duración</label>
+
+        <select [(ngModel)]="storyDuration">
+
+          <option [value]="1">1 hora</option>
+
+          <option [value]="6">6 horas</option>
+
+          <option [value]="12">12 horas</option>
+
+          <option [value]="24">24 horas</option>
+
+          <option [value]="48">48 horas</option>
+
+        </select>
+
+        <input type="text" [(ngModel)]="storyText" placeholder="Texto opcional">
+
+        <input type="file" accept="image/*,video/*" (change)="storyFileChange($event)">
+
+        <button class="add-story-btn" (click)="createStory()">
+          Subir historia
+        </button>
+
+        <button type="button" class="story-camera-btn" (click)="openStoryCamera()">
+          📷 Abrir cámara
+        </button>
+
+        <div class="story-camera-panel" *ngIf="showStoryCamera">
+
+          <video id="storyCameraPreview" class="story-camera-preview" autoplay playsinline muted>
+          </video>
+
+
+          <div class="story-camera-controls">
+
+            <button type="button" (click)="captureStoryPhoto()">
+              📸 Hacer foto
+            </button>
+            <button *ngIf="!storyIsRecording" type="button" (click)="startStoryVideoRecording()">
+              🎥 Grabar vídeo
+            </button>
+
+            <button *ngIf="storyIsRecording" type="button" (click)="stopStoryVideoRecording()">
+              ⏹ Detener grabación
+            </button>
+
+            <button type="button" (click)="closeStoryCamera()">
+              ✖ Cerrar
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+    <!-- SELECTOR DE MUNDO -->
+
+    @if (showWorldSelection) {
+
+    <div class="world-selection-overlay" (click)="closeWorldSelection()">
+
+      <div class="world-selection-modal" (click)="$event.stopPropagation()">
+
+        <button type="button" class="world-selection-close" (click)="closeWorldSelection()">
+          ✕
+        </button>
+
+        <h2>Elige tu mundo</h2>
+
+        <p>
+          Puedes cambiar de mundo cuando quieras.
+          Tu progreso se conservará.
+        </p>
+
+        <div class="world-selection-grid">
+
+          @for (world of availableWorlds; track world.id) {
+
+          <button type="button" class="world-option" [class.world-option--selected]="selectedWorld === world.id"
+            (click)="selectWorld(world.id)">
+
+            <span class="world-option__icon">
+              {{ world.icon }}
+            </span>
+
+            <strong>
+              {{ world.name }}
+            </strong>
+
+            <small>
+              {{ world.description }}
+            </small>
+
+            @if (selectedWorld === world.id) {
+
+            <span class="world-option__active">
+              Mundo actual
+            </span>
+
+            }
+
+          </button>
+
+          }
+
+        </div>
+
+      </div>
+
+    </div>
+
+    }
+  </main>
+</div>

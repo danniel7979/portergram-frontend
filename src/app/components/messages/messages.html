@@ -1,0 +1,67 @@
+<div
+  class="messages-page"
+  [ngClass]="theme"
+  [style.backgroundImage]="globalBackground ? 'url(' + globalBackground + ')' : null"
+>
+
+  <aside class="messages-users">
+    <a class="messages-home-link" routerLink="/home">← Inicio</a>
+    <h2>Mensajes</h2>
+
+    <div
+  class="message-user-card"
+  *ngFor="let user of followingUsers"
+  [class.active]="selectedUser?._id === user._id"
+  (click)="openChat(user)"
+>
+  <img
+    *ngIf="user.image"
+    [src]="url + 'get-image-user/' + user.image"
+  >
+
+  <div>
+    <strong>{{ user.name }} {{ user.surname }}</strong>
+    <small>@{{ user.nick }}</small>
+  </div>
+</div>
+  </aside>
+
+  <section class="chat-panel" *ngIf="selectedUser">
+    <header class="chat-header">
+      <h3>{{ selectedUser.name }} {{ selectedUser.surname }}</h3>
+      <small>@{{ selectedUser.nick }}</small>
+    </header>
+
+    <div class="chat-messages">
+      <div
+        class="chat-message"
+        *ngFor="let message of messages"
+        [class.mine]="isMine(message)"
+      >
+        <p>{{ message.text }}</p>
+
+        <span>
+          {{ message.created_at * 1000 | date:'dd/MM/yyyy HH:mm' }}
+        </span>
+      </div>
+    </div>
+
+    <div class="chat-input">
+      <input
+        [(ngModel)]="newMessage"
+        placeholder="Escribe un mensaje..."
+        (keyup.enter)="sendMessage()"
+      >
+
+      <button (click)="sendMessage()">
+        Enviar
+      </button>
+    </div>
+  </section>
+
+  <section class="chat-empty" *ngIf="!selectedUser">
+    <h2>Selecciona un usuario</h2>
+    <p>Elige una conversación para empezar a chatear.</p>
+  </section>
+
+</div>

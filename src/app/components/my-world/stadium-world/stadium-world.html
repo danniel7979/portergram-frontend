@@ -1,0 +1,198 @@
+<div class="stadium-scene" [ngClass]="[
+        mode === 'aside'
+            ? 'stadium-scene--aside'
+            : 'stadium-scene--full',
+
+        'stadium-scene--' + timePhase
+    ]">
+
+    <div class="stadium-background"></div>
+
+
+    <!-- ========================================= -->
+    <!-- MARCADOR: UNA SOLA VEZ -->
+    <!-- ========================================= -->
+
+    <div class="stadium-live-score" [class.stadium-live-score--aside]="mode === 'aside'"
+        [class.stadium-live-score--full]="mode === 'full'" [class.stadium-live-score--goal]="goalAnimation">
+
+        <button type="button" class="stadium-score-flag" (click)="$event.stopPropagation(); openFlagSelector('left')">
+            <img [src]="getFlagImage(leftFlagId)" alt="" draggable="false">
+        </button>
+
+        <strong class="stadium-score-number">
+            {{ homeScore }}
+        </strong>
+
+        <span class="stadium-live-score__separator">
+            -
+        </span>
+
+        <strong class="stadium-score-number">
+            {{ awayScore }}
+        </strong>
+
+        <button type="button" class="stadium-score-flag" (click)="$event.stopPropagation(); openFlagSelector('right')">
+            <img [src]="getFlagImage(rightFlagId)" alt="" draggable="false">
+        </button>
+
+    </div>
+
+
+    @if (goalMessage) {
+
+    <div class="stadium-goal-message">
+        {{ goalMessage }}
+    </div>
+
+    }
+
+
+    <button type="button" class="stadium-score-reset" (click)="$event.stopPropagation(); resetScore()"
+        title="Reiniciar marcador" aria-label="Reiniciar marcador">
+        ↶
+    </button>
+
+
+    @if (mode === 'full' || mode === 'aside') {
+
+    <button type="button" class="stadium-goal-hitbox stadium-goal-hitbox--left" aria-label="Portería izquierda"
+        (click)="$event.stopPropagation(); scoreLeftGoal()">
+    </button>
+
+    <button type="button" class="stadium-goal-hitbox stadium-goal-hitbox--right" aria-label="Portería derecha"
+        (click)="$event.stopPropagation(); scoreRightGoal()">
+    </button>
+
+    }
+
+
+    @if (showFlagSelector) {
+
+    <div class="stadium-flag-selector-overlay" [class.stadium-flag-selector-overlay--aside]="mode === 'aside'"
+        [class.stadium-flag-selector-overlay--full]="mode === 'full'" (click)="closeFlagSelector()">
+
+        <div class="stadium-flag-selector" [class.stadium-flag-selector--aside]="mode === 'aside'"
+            [class.stadium-flag-selector--full]="mode === 'full'" (wheel)="$event.stopPropagation()"
+            (click)="$event.stopPropagation()">
+
+            <button type="button" class="stadium-flag-selector__close" (click)="closeFlagSelector()">
+                ✕
+            </button>
+
+            <h3>
+                Elige bandera
+            </h3>
+
+            <div class="stadium-flag-grid">
+
+                @for (
+                flag of availableFlags;
+                track flag.id
+                ) {
+
+                <button type="button" class="stadium-flag-option" (click)="selectFlag(flag.id)">
+
+                    <img [src]="flag.image" [alt]="flag.name" draggable="false">
+
+                    <span>
+                        {{ flag.name }}
+                    </span>
+
+                </button>
+
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+    }
+
+
+    <!-- ========================================= -->
+    <!-- ELEMENTOS DEL ESTADIO -->
+    <!-- ========================================= -->
+
+    @for (element of elements; track element.id) {
+
+    @if (shouldRenderElement(element)) {
+
+    @if (
+    element.id === 'stadium-lights' &&
+    timePhase === 'night'
+    ) {
+
+    <div class="stadium-field-light-layer" [style.opacity]="getStadiumLightIntensity(element)">
+    </div>
+
+    }
+
+    @if (element.id === 'stadium-fireworks') {
+
+    @if (timePhase === 'night') {
+
+    <div class="stadium-fireworks-container">
+
+        @for (
+        firework of getFireworksForStage(element);
+        track $index
+        ) {
+
+        <img [src]="firework.image" class="stadium-firework" [style.left.%]="firework.x" [style.top.%]="firework.y"
+            [style.--firework-scale]="firework.scale" [style.animation-delay.s]="firework.delay" draggable="false">
+
+        }
+
+    </div>
+
+    } @else if (mode === 'full') {
+
+    <div class="stadium-trophies-container">
+
+        @for (
+        trophy of getTrophiesForStage(element);
+        track $index
+        ) {
+
+        <img [src]="trophy.image" class="stadium-trophy" [style.left.%]="trophy.x" [style.top.%]="trophy.y"
+            [style.--trophy-scale]="trophy.scale" draggable="false">
+
+        }
+
+    </div>
+
+    }
+
+    }
+
+
+    @if (element.id !== 'stadium-fireworks') {
+
+    <div class="stadium-element" [ngClass]="'stadium-element--' + element.id" [style.left.%]="getElementX(element)"
+        [style.top.%]="getElementY(element)" [style.width.%]="getElementWidth(element)"
+        [style.height.%]="getElementHeight(element)" [style.scale]="getElementScale(element)"
+        [style.z-index]="getElementZIndex(element)">
+
+        <!-- IMAGEN DEL ELEMENTO -->
+        @if (getElementImage(element)) {
+
+        <img [src]="getElementImage(element)" class="stadium-element__image" alt="" draggable="false">
+
+        }
+
+    </div>
+
+    <!-- ILUMINACIÓN DEL CAMPO -->
+    <div class="stadium-field-light" [style.opacity]="getStadiumLightIntensity(element)">
+    </div>
+
+    }
+
+    }
+
+    }
+
+</div>
